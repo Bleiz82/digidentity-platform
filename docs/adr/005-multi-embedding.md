@@ -233,6 +233,7 @@ notturni. Vedi Questione Aperta #3.
 | D — HNSW params | **m=16, ef_c=128, ef_s=80, dim=3072** | Recall ≥ 0.95; ~$6.83/tenant via Batch API; ~105 min re-embedding |
 | E — Migrazione dim | **E1** big bang offline via Batch API | Nessuna ambiguità score; finestra ~18h per 10 tenant; Batch API parte costitutiva di E1 |
 | F — Reranker | **F1** no reranker su path principale; **F2** solo offline | TTFC budget §2.3 non compatibile con cross-encoder real-time |
+| Indice HNSW | **per-tenant isolato** (no shared con filtro tenant_id) | Coerenza ADR-003 RLS; pgvector HNSW degrada con filtri post-hoc; over-fetch su shared compromette recall@10 |
 
 ---
 
@@ -275,6 +276,9 @@ notturni. Vedi Questione Aperta #3.
   temporaneo (~2×). Rischio: se il cutover fallisce a metà, rollback
   richiede ripristino degli indici 1536 dim (snapshot obbligatorio
   pre-migrazione).
+- **Provisioning hardware per-tenant ha overhead lineare**: ogni nuovo
+  tenant richiede +25–35 GB working set. Tenant idle vanno mantenuti
+  in swap NVMe (cold page-in 200–400ms al primo accesso dopo idle).
 
 ### Neutre
 
@@ -325,14 +329,6 @@ notturni. Vedi Questione Aperta #3.
    Con quale cadenza i pesi C2 vengono aggiornati? Proposta: revisione
    mensile manuale con alert automatico se il delta score medio supera
    0.05. Richiede accordo con il team ML.
-
-4. **Indice HNSW per tenant isolato o shared**: ogni tenant ha il proprio
-   indice HNSW (isolamento totale, overhead RAM per tenant) oppure
-   un indice shared con filtro `tenant_id` (minor RAM, ma i vettori
-   di tenant diversi competono per i cluster HNSW)? La BIBLE §6.1
-   non specifica. Isolamento per-tenant è coerente con ADR-003 (RLS),
-   ma impatta il provisioning RAM. Da decidere prima del deploy
-   multi-tenant.
 
 ---
 
