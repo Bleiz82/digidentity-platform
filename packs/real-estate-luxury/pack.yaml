@@ -1,0 +1,29 @@
+# DigIdentity Pack — real-estate-luxury v0.1
+# BIBLE §5: fat core / lean packs
+
+id: real-estate-luxury
+version: "0.1.0"
+vertical: real_estate
+language: it
+
+# Search weight overrides (ADR-005 Area C)
+search:
+  weights:
+    default:
+      content: 0.45
+      lifestyle: 0.35
+      features: 0.20
+    lifestyle_query:
+      content: 0.25
+      lifestyle: 0.60
+      features: 0.15
+    technical_query:
+      content: 0.35
+      lifestyle: 0.10
+      features: 0.55
+
+# Personas (Phase 1 target: 3 personas per ADR morph)
+personas: []
+
+# Morph rules (Phase 1 target: 3 homepage variants)
+morph_rules: []
