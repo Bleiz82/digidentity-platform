@@ -82,6 +82,13 @@ Max **1 retry**, attesa fissa **200ms**, solo per errori transient (HTTP 503, 52
 
 Motivazione del limite: 1 retry × 200ms = 200ms di attesa massima, lascia ~600ms di budget per TTFC. Un secondo retry porterebbe il worst-case a ~400ms di attesa, con tensione reale sul budget §2.3.
 
+Eccezione canale voice: sul canale voce (LiveKit Agents, ADR-002)
+il retry intra-provider è disabilitato. Il budget TTFC voice di
+500ms (§2.3) non è compatibile con un retry da 200ms + chiamata
+LLM (~400ms). Su voice, il router salta direttamente al fallback
+cross-provider via circuit breaker. Il LLMRouter riceve il
+parametro `channel='voice'|'web'` dal caller e ne adatta la policy.
+
 #### C2 — Nessun retry, ogni errore conta
 
 Ogni errore 5xx incrementa immediatamente il counter. Fallback senza attesa.
@@ -147,7 +154,7 @@ Il router risponde al client e poi emette `log_usage.delay(...)`. Deduplicazione
 |---|---|---|
 | A — Trigger upgrade | **A1** rule-based: ≥2 segnali tra: context > 6.000 token, ≥3 tool nel turno, keyword multi-step nel prompt, score prev < 0.65 (regola ≥2 segnali per evitare upgrade spurie) | Latency-safe, deterministica |
 | B — CB granularità | **B2** per-model: breaker separato per Sonnet e Opus | Endpoint Anthropic separati; resilienza fine-grained |
-| C — Retry | **C1 mod.**: max 1 retry, 200ms fissa, solo 503/529 | Budget TTFC §2.3; 429/500 → CB diretto |
+| C — Retry | **C1 mod.**: max 1 retry, 200ms fissa, solo 503/529 | Budget TTFC §2.3; 429/500 → CB diretto; retry disabilitato su channel=voice |
 | D — Mid-stream | **D1**: abort + retry completo su provider alternativo via `idempotency_key` | Consistenza garantita; D2 impraticabile |
 | E — Cost tracking | **E2**: log asincrono Celery, `ON CONFLICT (request_id) DO NOTHING` | Latency isolata; perdita accettabile vs impatto response path |
 
@@ -203,9 +210,8 @@ Request → A1 classify (≥2 segnali?) → select model (Sonnet/Opus)
 ## Questioni aperte
 
 1. **Pricing table**: dove vive la tabella `(provider, model) → cost_usd_per_token`? Hardcodata nel codice, in config file, o in DB? Se i prezzi cambiano, serve un deploy o una modifica config?
-2. **TTFC voice ≤ 500ms**: il budget retry di 200ms è compatibile con il canale web ma potenzialmente incompatibile con voice. Il `LLMRouter` deve ricevere il canale di origine per disabilitare il retry su voice?
-3. **GPT-5 streaming compatibility**: il pattern streaming con tool calling di OpenAI SDK è compatibile con quello Anthropic nell'agent loop? Verificare che D1 abort + retry su GPT-5 non richieda adattatori specifici.
-4. **Judge automatico Opus 4.7 (§11)**: il judge che valuta la qualità (segnale A1 reattivo) usa `LLMRouter`? Se sì, rischio di loop. Il judge deve usare Opus 4.7 direttamente, bypassando il router.
+2. **GPT-5 streaming compatibility**: il pattern streaming con tool calling di OpenAI SDK è compatibile con quello Anthropic nell'agent loop? Verificare che D1 abort + retry su GPT-5 non richieda adattatori specifici.
+3. **Judge automatico Opus 4.7 (§11)**: il judge che valuta la qualità (segnale A1 reattivo) usa `LLMRouter`? Se sì, rischio di loop. Il judge deve usare Opus 4.7 direttamente, bypassando il router.
 
 ---
 
