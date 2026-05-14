@@ -1,29 +1,52 @@
 # DigIdentity Pack — real-estate-luxury v0.1
 # BIBLE §5: fat core / lean packs
+# ADR-005 Area C: search weights per query_type
 
 id: real-estate-luxury
 version: "0.1.0"
 vertical: real_estate
 language: it
 
-# Search weight overrides (ADR-005 Area C)
+# Search weight overrides (ADR-005 Area C — 3 query types)
 search:
   weights:
     default:
       content: 0.45
       lifestyle: 0.35
       features: 0.20
-    lifestyle_query:
-      content: 0.25
-      lifestyle: 0.60
+    lifestyle_search:
+      content: 0.15
+      lifestyle: 0.70
       features: 0.15
-    technical_query:
-      content: 0.35
+    feature_search:
+      content: 0.20
       lifestyle: 0.10
-      features: 0.55
+      features: 0.70
+    general:
+      content: 0.45
+      lifestyle: 0.35
+      features: 0.20
 
-# Personas (Phase 1 target: 3 personas per ADR morph)
-personas: []
+# Personas (referenced by morph rules)
+personas:
+  - id: family_relocating
+    label: "Famiglia in trasferimento"
+    description: >
+      Coppia o famiglia con figli che cerca residenza principale in zona
+      di pregio. Priorità: sicurezza, scuole, spazi interni, prossimità ai
+      servizi. Sensibile al lifestyle familiare, meno agli investimenti.
+  - id: international_investor
+    label: "Investitore internazionale"
+    description: >
+      Acquirente non residente, orientato alla valorizzazione del capitale,
+      ai rendimenti da affitto stagionale o plus-valore a 5-10 anni.
+      Sensibile a ROI, liquidità del mercato, gestione immobiliare delegata.
+  - id: luxury_retiree
+    label: "Pensionato lifestyle-driven"
+    description: >
+      Over-55 con capitale disponibile, cerca residenza o seconda casa con
+      alto valore esperienziale. Priorità: vista, silenzio, cucina outdoor,
+      concierge, wellness. Non negozia sulla qualità della vita quotidiana.
 
-# Morph rules (Phase 1 target: 3 homepage variants)
-morph_rules: []
+# Morph rules location
+morph_rules_path: morph_rules/

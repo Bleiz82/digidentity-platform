@@ -1,0 +1,15 @@
+{% if lifestyle_tags %}
+{{ lifestyle_tags | join(" · ") }}
+{% endif %}
+
+{{ lifestyle_narrative if lifestyle_narrative else "" }}
+
+{% if location_lifestyle %}
+{{ location_lifestyle }}
+{% endif %}
+{% if outdoor_spaces %}
+Spazi outdoor: {{ outdoor_spaces | join(", ") }}.
+{% endif %}
+{% if wellness %}
+Wellness e benessere: {{ wellness | join(", ") }}.
+{% endif %}

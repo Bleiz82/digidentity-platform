@@ -1,0 +1,4 @@
+{{ property_type | capitalize }} con {{ rooms }} camere da letto{% if bathrooms %}, {{ bathrooms }} bagni{% endif %}{% if sqm %}, {{ sqm }} mq{% endif %}{% if land_sqm %} (terreno {{ land_sqm }} mq){% endif %}{% if pool %}, piscina{% if pool_type %} {{ pool_type }}{% endif %}{% endif %}{% if garage %}, garage {{ garage }} posti{% endif %}{% if elevator %}, ascensore{% endif %}.
+{% if location %} Ubicazione: {{ location }}{% if sea_distance %}, a {{ sea_distance }} m dal mare{% endif %}.{% endif %}
+{% if year_built %} Anno costruzione: {{ year_built }}.{% endif %}
+{% if energy_class %} Classe energetica: {{ energy_class }}.{% endif %}
