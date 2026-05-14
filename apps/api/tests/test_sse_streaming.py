@@ -15,6 +15,7 @@ from httpx import ASGITransport, AsyncClient
 _MOCK_DELAY = MagicMock()
 
 VALID_TENANT_ID = "550e8400-e29b-41d4-a716-446655440000"
+VALID_CONV_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 
 
 @pytest.fixture
@@ -30,13 +31,26 @@ async def client():
             yield ac
 
 
+# ── Path parameter validation ─────────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_sse_invalid_conversation_id_rejected(client: AsyncClient) -> None:
+    """Non-UUID conversation_id → 422 (FastAPI path param validation)."""
+    response = await client.get(
+        "/api/v1/conversations/pippo/stream",
+        headers={"X-Tenant-Id": VALID_TENANT_ID},
+    )
+    assert response.status_code == 422
+
+
 # ── Auth / header validation ──────────────────────────────────────────────────
 
 
 @pytest.mark.asyncio
 async def test_sse_requires_tenant_header(client: AsyncClient) -> None:
     """Missing X-Tenant-Id → 401."""
-    response = await client.get("/api/v1/conversations/test-id/stream")
+    response = await client.get(f"/api/v1/conversations/{VALID_CONV_ID}/stream")
     assert response.status_code == 401
 
 
@@ -44,7 +58,7 @@ async def test_sse_requires_tenant_header(client: AsyncClient) -> None:
 async def test_sse_wrong_tenant_uuid(client: AsyncClient) -> None:
     """Invalid UUID in X-Tenant-Id → 400."""
     response = await client.get(
-        "/api/v1/conversations/test-id/stream",
+        f"/api/v1/conversations/{VALID_CONV_ID}/stream",
         headers={"X-Tenant-Id": "not-a-uuid"},
     )
     assert response.status_code == 400
@@ -57,7 +71,7 @@ async def test_sse_wrong_tenant_uuid(client: AsyncClient) -> None:
 async def test_sse_accept_json_returns_406(client: AsyncClient) -> None:
     """Accept: application/json without text/event-stream → 406."""
     response = await client.get(
-        "/api/v1/conversations/test-id/stream",
+        f"/api/v1/conversations/{VALID_CONV_ID}/stream",
         headers={
             "X-Tenant-Id": VALID_TENANT_ID,
             "Accept": "application/json",
@@ -74,7 +88,7 @@ async def test_sse_accept_both_allows_stream(client: AsyncClient) -> None:
         mock_task.delay = MagicMock()
         async with client.stream(
             "GET",
-            "/api/v1/conversations/test-id/stream",
+            f"/api/v1/conversations/{VALID_CONV_ID}/stream",
             params={"prompt": "ciao"},
             headers={
                 "X-Tenant-Id": VALID_TENANT_ID,
@@ -96,7 +110,7 @@ async def test_sse_emits_text_events(client: AsyncClient) -> None:
 
         async with client.stream(
             "GET",
-            "/api/v1/conversations/test-id/stream",
+            f"/api/v1/conversations/{VALID_CONV_ID}/stream",
             params={"prompt": "ciao"},
             headers={"X-Tenant-Id": VALID_TENANT_ID},
         ) as response:
@@ -125,7 +139,7 @@ async def test_sse_cloudflare_headers_present(client: AsyncClient) -> None:
         mock_task.delay = MagicMock()
         async with client.stream(
             "GET",
-            "/api/v1/conversations/test-id/stream",
+            f"/api/v1/conversations/{VALID_CONV_ID}/stream",
             params={"prompt": "ciao"},
             headers={"X-Tenant-Id": VALID_TENANT_ID},
         ) as response:
@@ -143,7 +157,7 @@ async def test_sse_ttfc_under_800ms(client: AsyncClient) -> None:
 
         async with client.stream(
             "GET",
-            "/api/v1/conversations/test-id/stream",
+            f"/api/v1/conversations/{VALID_CONV_ID}/stream",
             params={"prompt": "ciao"},
             headers={"X-Tenant-Id": VALID_TENANT_ID},
         ) as response:
@@ -172,7 +186,7 @@ async def test_sse_fail_mode_503(client: AsyncClient) -> None:
 
         async with client.stream(
             "GET",
-            "/api/v1/conversations/test-id/stream",
+            f"/api/v1/conversations/{VALID_CONV_ID}/stream",
             params={"prompt": "ciao"},
             headers={
                 "X-Tenant-Id": VALID_TENANT_ID,

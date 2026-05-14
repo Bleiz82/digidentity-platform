@@ -44,7 +44,7 @@ async def get_tenant_id(request: Request) -> UUID:
 
 @router.get("/conversations/{conversation_id}/stream")
 async def stream_conversation(
-    conversation_id: str,
+    conversation_id: UUID,
     request: Request,
     tenant_id: UUID = Depends(get_tenant_id),
 ) -> Response:
@@ -71,7 +71,7 @@ async def stream_conversation(
             try:
                 async for event in _llm_router.route(
                     prompt=prompt,
-                    conversation_id=conversation_id,
+                    conversation_id=str(conversation_id),
                     tenant_id=str(tenant_id),
                     fail_mode=fail_mode,
                 ):
