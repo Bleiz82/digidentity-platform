@@ -244,10 +244,17 @@ class EvalRunner:
             metrics["latency_p99_ms"] = percs["p99"]
 
         # ── Threshold comparison ─────────────────────────────────────────────
+        # Metrics ending in _ms or _seconds are lower-is-better (latency).
+        # All other metrics are higher-is-better (accuracy, NDCG, etc.).
+        _LOWER_IS_BETTER_SUFFIXES = ("_ms", "_seconds")
+
         threshold_results: dict[str, bool] = {}
         for metric_name, threshold in eval_set.thresholds.items():
             actual = metrics.get(metric_name, 0.0)
-            threshold_results[metric_name] = actual >= threshold
+            if metric_name.endswith(_LOWER_IS_BETTER_SUFFIXES):
+                threshold_results[metric_name] = actual <= threshold
+            else:
+                threshold_results[metric_name] = actual >= threshold
 
         # passed = True if calibration_mode, else all thresholds must pass
         if eval_set.calibration_mode:

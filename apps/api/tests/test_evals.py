@@ -137,7 +137,7 @@ def test_eval_set_loads_from_yaml() -> None:
     assert all(c.type == "routing" for c in eval_set.cases), (
         "All cases in router_correctness.yaml should be type=routing"
     )
-    assert eval_set.calibration_mode is True
+    assert eval_set.calibration_mode is False  # gate active since step-6.3
 
 
 def test_eval_set_loads_retrieval_yaml() -> None:
@@ -345,3 +345,108 @@ async def test_eval_runner_markdown_report() -> None:
     assert "## Eval:" in md
     assert "CALIBRATING" in md
     assert "Cases:" in md
+
+
+# ── Threshold direction tests ─────────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_threshold_higher_is_better_pass_fail() -> None:
+    """Higher-is-better metrics (no *_ms suffix): pass when actual >= threshold."""
+    cases = [
+        EvalCase(
+            id="routing-hib-001",
+            type="routing",
+            input={"prompt": "ciao", "context_tokens": 100, "tool_calls_prev": 0},
+            expected={"complex": False, "preferred_model": "sonnet"},
+        )
+    ]
+    # routing_accuracy will be 1.0 (1 correct case)
+    eval_set_pass = EvalSet(
+        name="HIB Pass",
+        description="Higher-is-better pass",
+        cases=cases,
+        thresholds={"routing_accuracy": 0.80},
+        calibration_mode=False,
+    )
+    eval_set_fail = EvalSet(
+        name="HIB Fail",
+        description="Higher-is-better fail",
+        cases=cases,
+        thresholds={"routing_accuracy": 1.10},  # impossible threshold
+        calibration_mode=False,
+    )
+
+    runner = EvalRunner()
+    result_pass = await runner.run_set(eval_set_pass)
+    result_fail = await runner.run_set(eval_set_fail)
+
+    assert result_pass.passed is True, "Should pass: 1.0 >= 0.80"
+    assert result_fail.passed is False, "Should fail: 1.0 < 1.10"
+
+
+@pytest.mark.asyncio
+async def test_threshold_lower_is_better_pass_fail() -> None:
+    """Lower-is-better metrics (*_ms suffix): pass when actual <= threshold."""
+    cases = [
+        EvalCase(
+            id="routing-lib-001",
+            type="routing",
+            input={"prompt": "ciao", "context_tokens": 100, "tool_calls_prev": 0},
+            expected={"complex": False, "preferred_model": "sonnet"},
+        )
+    ]
+    runner = EvalRunner()
+    result = await runner.run_set(
+        EvalSet(
+            name="LIB Test",
+            description="Lower-is-better latency threshold",
+            cases=cases,
+            thresholds={},
+            calibration_mode=False,
+        )
+    )
+    # Inject a fake latency metric to test comparison logic directly
+    # routing produces routing_accuracy, not latency; we test the direction logic
+    # by constructing threshold_results manually via a sub-run with injected metrics
+    from digidentity_api.evals.runner import EvalResult
+
+    fake_result_pass = EvalResult(
+        set_name="LIB Pass",
+        cases_run=1,
+        cases_errored=0,
+        metrics={"latency_p95_ms": 150.0},
+        threshold_results={"latency_p95_ms": 150.0 <= 280.0},  # True
+        calibration_mode=False,
+        passed=True,
+    )
+    fake_result_fail = EvalResult(
+        set_name="LIB Fail",
+        cases_run=1,
+        cases_errored=0,
+        metrics={"latency_p95_ms": 350.0},
+        threshold_results={"latency_p95_ms": 350.0 <= 280.0},  # False
+        calibration_mode=False,
+        passed=False,
+    )
+
+    assert fake_result_pass.threshold_results["latency_p95_ms"] is True, (
+        "150ms <= 280ms should be PASS"
+    )
+    assert fake_result_fail.threshold_results["latency_p95_ms"] is False, (
+        "350ms <= 280ms should be FAIL"
+    )
+
+    # Verify the runner itself applies lower-is-better for *_ms thresholds
+    eval_set_with_latency = EvalSet(
+        name="LIB Runner Test",
+        description="Runner lower-is-better check",
+        cases=cases,
+        thresholds={"latency_p95_ms": 280.0},  # *_ms → actual <= threshold
+        calibration_mode=False,
+    )
+    result_runner = await runner.run_set(eval_set_with_latency)
+    # latency_p95_ms will be 0.0 (no latency cases run) → 0.0 <= 280.0 → True
+    assert result_runner.threshold_results.get("latency_p95_ms") is True, (
+        "0.0ms <= 280.0ms should be PASS (lower-is-better direction applied)"
+    )

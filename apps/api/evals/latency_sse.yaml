@@ -1,17 +1,17 @@
 # Evaluation cases for SSE latency measurement
-# Phase 1: Calibration mode - measure without blocking CI
-# Measures TTFC (time-to-first-chunk) for streaming responses
+# Phase 1: Production gate — lower-is-better, runner uses actual <= threshold for *_ms keys.
+# Baseline (commit 6ae91f8): P50=84.4ms, P95=185.3ms.
 
 meta:
   name: "SSE Latency Evaluation"
   description: "Latency evaluation for Server-Sent Events streaming responses. Measures p95 and p99 TTFC across 50 diverse prompts in Italian real estate context."
-  calibration_mode: true
+  calibration_mode: false
+  baseline_run: "6ae91f8"
   thresholds:
-    ttfc_p95_ms: 1500
-    ttfc_p99_ms: 2500
-  aggregate_thresholds:
-    ttfc_p95_ms: 1500
-    ttfc_p99_ms: 2500
+    latency_p50_ms: 120   # measured 84.4ms, +40% margin for CI noise
+    latency_p95_ms: 280   # measured 185.3ms, +51% margin for CI noise
+    latency_p99_ms: 350   # safety margin above P95
+    # lower-is-better: runner passes when actual <= threshold (*_ms suffix convention)
 
 cases:
   # ========== SHORT PROMPTS (20) ==========

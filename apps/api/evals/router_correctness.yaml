@@ -1,13 +1,14 @@
 # Evaluation cases for request router correctness
-# Phase 1: Calibration mode - measure without blocking CI
+# Phase 1: Production gate - blocks CI if accuracy drops below threshold
 # Tests the router's classification of simple vs complex requests
 
 meta:
   name: "Router Correctness Evaluation"
   description: "Evaluates the request router's ability to classify simple vs complex requests and select appropriate models (Sonnet vs Opus). Tests signal detection: keywords, context tokens, and previous scoring."
-  calibration_mode: true
+  calibration_mode: false
+  baseline_run: "6ae91f8"
   thresholds:
-    accuracy: 0.90  # >= 90% of 20 cases correct
+    accuracy: 0.95  # measured 1.000, deterministic margin
 
 cases:
   # ========== SIMPLE CASES (10) ==========
