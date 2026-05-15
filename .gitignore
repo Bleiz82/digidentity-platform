@@ -22,3 +22,10 @@ Thumbs.db
 # Claude
 .claude/rls-exemptions.log
 .claude/logs/
+
+# Personal Claude Code settings
+.claude/settings.local.json
+
+# Eval run artifacts (keep folder via .gitkeep)
+apps/api/eval-results/*.json
+!apps/api/eval-results/.gitkeep
