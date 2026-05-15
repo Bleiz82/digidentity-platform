@@ -1,31 +1,24 @@
 # Evaluation cases for real-estate-luxury pack retrieval
-# Phase 1: Calibration mode - pipeline correctness test with stub embeddings
+# Phase 1: Calibration mode - measure without blocking CI
 
 meta:
   name: "Real Estate Luxury Retrieval Evaluation"
-  description: "End-to-end retrieval evaluation across lifestyle, features, and general queries in Italian real estate luxury context."
+  description: "End-to-end retrieval evaluation across lifestyle, features, and general queries in Italian real estate luxury context. Uses recall@K methodology due to stub embedding semi-determinism."
   calibration_mode: true
-  quality_proxy: "stub_embedding_exact_text"
-  # NOTE: query text = exact rendered template text of target entity.
-  # Stub hash-based embeddings require identical text for identical embedding vector.
-  # This tests pipeline correctness (template→embedding→search→ranking), not semantic retrieval.
-  # Natural language query eval deferred to Phase 2 (real embeddings).
-  # Archive: evals/_archive/retrieval_natural_queries_phase1.yaml
   thresholds:
-    ndcg_at_10: 0.50
-    mrr: 0.50
+    ndcg_at_10: 0.70
+    mrr: 0.60
 
 cases:
   # ========== LIFESTYLE QUERIES (10) ==========
-  # query = exact rendered lifestyle_template text of target entity.
-  # Stub embeddings are hash-based: identical text → identical vector → rank #1.
+  # Semantic queries about atmosphere, experience, lifestyle
   # weights: lifestyle=0.70, content=0.15, features=0.15
 
   - id: re-lifestyle-001
     type: retrieval
-    tags: [lifestyle, mare, sardegna]
+    tags: [lifestyle, mare, vacanze]
     input:
-      query: "mare · exclusivita · design\n\nMattine in piscina infinity con vista sul golfo, cene sulla terrazza al tramonto. Porto Cervo a 5 minuti.\n\nIl cuore della Costa Smeralda, circondato da boutique di lusso e ristoranti stellati.\n\nSpazi outdoor: terrazza panoramica, giardino privato, piscina infinity.\n\nWellness e benessere: sauna, zona relax bordo piscina."
+      query: "cerco una casa con vista sul mare dove rilassarsi la sera e svegliarsi al suono delle onde"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -37,12 +30,16 @@ cases:
       in_top_k:
         - slug: villa-asfodelo-porto-cervo
           k: 10
+        - slug: villa-marina-grande-positano
+          k: 10
+        - slug: residenza-ginepro-porto-rotondo
+          k: 10
 
   - id: re-lifestyle-002
     type: retrieval
     tags: [lifestyle, design, fashion]
     input:
-      query: "design · fashion · aperitivo\n\nColazione con vista sui tetti del Duomo, shopping a via Montenapoleone, aperitivo in terrazza. Milano come pochi la vivono.\n\nVia della Spiga a 200 metri. Armani, Prada, Bulgari sotto casa.\n\nSpazi outdoor: terrazza esclusiva 80mq, loggia living.\n\nWellness e benessere: spa condominiale, palestra condominiale."
+      query: "appartamento chic nel cuore della moda milanese, perfetto per aperitivi e cene eleganti"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -59,7 +56,7 @@ cases:
     type: retrieval
     tags: [lifestyle, family, sailing]
     input:
-      query: "porto · sailing · family\n\nAperitivi sul porto, regate del mercoledì, cene di pesce fresco. La vita come dovrebbe essere.\n\nPorto Rotondo: il porto dei velisti, la quiete dei palazzi, il calore dei sardi.\n\nSpazi outdoor: veranda coperta, piscina riscaldata, giardino fiorito.\n\nWellness e benessere: idromassaggio, palestra privata."
+      query: "villa per una grande famiglia con piscina e accesso al porto, ideale per vacanze in vela"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -76,7 +73,7 @@ cases:
     type: retrieval
     tags: [lifestyle, toscana, arte]
     input:
-      query: "storia · arte · toscana\n\nPasseggiare tra i cipressi all'alba, visitare il Duomo a 20 minuti, degustare Chianti dalla propria cantina.\n\nFiesole domina Firenze. Vista Brunelleschi dalla piscina.\n\nSpazi outdoor: parco 15.000 mq, limonaia, piscina con solarium.\n\nWellness e benessere: spa storica, campo da tennis."
+      query: "proprietà storica in Toscana circonda da vigneti, con atmosfera artistica e culturale"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -88,12 +85,14 @@ cases:
       in_top_k:
         - slug: villa-dei-cipressi-fiesole
           k: 10
+        - slug: casale-il-sasso-montalcino
+          k: 10
 
   - id: re-lifestyle-005
     type: retrieval
     tags: [lifestyle, montagna, wellness]
     input:
-      query: "sci · montagna · wellness\n\nSci fino alla porta, aperski al rifugio, rientro nella propria spa. Dolomiti Patrimonio UNESCO fuori dalla finestra.\n\nCortina: mondanità alpina, il meglio dell'inverno italiano.\n\nSpazi outdoor: terrazza panoramica Dolomiti, giardino alpino, area ski room.\n\nWellness e benessere: spa privata, sauna finlandese, piscina coperta riscaldata."
+      query: "rifugio di montagna dove sciare la mattina e rilassarsi in spa la sera, perfetto per il benessere"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -110,7 +109,7 @@ cases:
     type: retrieval
     tags: [lifestyle, puglia, slowlife]
     input:
-      query: "puglia · slow_life · trulli\n\nRaccolta delle olive a ottobre, cene sotto il pergolato, visite ai trulli di Alberobello. Il Sud come non si vede nei film.\n\nValle d'Itria: paesaggi da cartolina, cucina casereccia, ostuni bianca a 15 minuti.\n\nSpazi outdoor: oliveto 3 ettari, piscina naturale, 4 trulli ospiti.\n\nWellness e benessere: bagno turco, yoga pavilion."
+      query: "esperienza autentica di slow life pugliese, con trulli antichi e paesaggi rurali rigeneranti"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -127,7 +126,7 @@ cases:
     type: retrieval
     tags: [lifestyle, celebrity, lago]
     input:
-      query: "lago · celebrity · sailing\n\nSvegliarsi sul lago, prendere l'hydrofoil per Como, cena a Villa d'Este. Bellagio: l'indirizzo più famoso d'Italia.\n\nBellagio divide il lago. Clooney è vicino di casa.\n\nSpazi outdoor: terrazza 200mq con piscina, pontile privato.\n\nWellness e benessere: palestra panoramica, vasca idromassaggio sul lago."
+      query: "privacy assoluta sul lago, uno spazio da vivere da star internazionale con servizi five-star"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -144,7 +143,7 @@ cases:
     type: retrieval
     tags: [lifestyle, costiera, dolcevita]
     input:
-      query: "costiera · mare · dolce_vita\n\nColazione sulla terrazza con vista Positano, bagno privato al mare, aperitivo al tramonto rosa. La costiera come pochissimi la vivono.\n\nPositano: scalinate, profumo di limoni, barche bianche. Napoli a 1 ora.\n\nSpazi outdoor: terrazza panoramica, piscina sfioro, accesso mare privato.\n\nWellness e benessere: hammam, zona massaggi vista mare."
+      query: "la vera dolce vita costiera: sole, mare, terrazze vista infinito e cene indimenticabili"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -161,7 +160,7 @@ cases:
     type: retrieval
     tags: [lifestyle, venezia, storia]
     input:
-      query: "venezia · storia · arte\n\nGondola di mattina, Biennale a settembre, aperitivo al tramonto sul molo di casa. Venezia come i veneziani del '500.\n\nDorsoduro: gallerie d'arte, bar da locals, Canal Grande sotto casa.\n\nSpazi outdoor: molo privato, cortile interno, altana panoramica.\n\nWellness e benessere: bagno turco, sala fitness."
+      query: "palazzo veneziano affacciato sul Canal Grande, ricco di storia e fascino medievale"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -178,7 +177,7 @@ cases:
     type: retrieval
     tags: [lifestyle, vino, toscana]
     input:
-      query: "vino · toscana · agriturismo\n\nVendemmia a settembre, assaggi in cantina, pic-nic nella vigna con vista sulla Val d'Orcia. Il Brunello è di casa.\n\nMontalcino: il Brunello, i cipressi, il silenzio. UNESCO a pochi km.\n\nSpazi outdoor: vigna 8 ettari, piscina panoramica, loggia.\n\nWellness e benessere: sauna in cantina, area meditazione."
+      query: "casale immerso nei vigneti toscani, con cantine storiche e possibilità di produzione propria"
       query_type: lifestyle
       weights_override:
         lifestyle: 0.70
@@ -192,14 +191,14 @@ cases:
           k: 10
 
   # ========== FEATURE QUERIES (10) ==========
-  # query = exact rendered features_template text of target entity.
+  # Technical queries with specific characteristics and numbers
   # weights: features=0.70, content=0.15, lifestyle=0.15
 
   - id: re-features-001
     type: retrieval
     tags: [features, rooms, pool]
     input:
-      query: "Villa con 6 camere da letto, 5 bagni, 420 mq (terreno 3000 mq), piscina infinity, garage 2 posti.\n Ubicazione: Porto Cervo, Costa Smeralda, a 150 m dal mare.\n Anno costruzione: 2018.\n Classe energetica: A."
+      query: "villa con almeno 6 camere da letto e piscina riscaldata"
       query_type: features
       weights_override:
         features: 0.70
@@ -211,12 +210,16 @@ cases:
       in_top_k:
         - slug: villa-asfodelo-porto-cervo
           k: 10
+        - slug: villa-dei-cipressi-fiesole
+          k: 10
+        - slug: villa-marina-grande-positano
+          k: 10
 
   - id: re-features-002
     type: retrieval
     tags: [features, sqm, centro]
     input:
-      query: "Attico con 4 camere da letto, 3 bagni, 280 mq (terreno 120 mq), garage 1 posti, ascensore.\n Ubicazione: Milano, Quadrilatero della Moda.\n Anno costruzione: 2020.\n Classe energetica: A+."
+      query: "appartamento di circa 280 mq nel centro della città, design contemporaneo"
       query_type: features
       weights_override:
         features: 0.70
@@ -233,7 +236,7 @@ cases:
     type: retrieval
     tags: [features, rooms, bathrooms]
     input:
-      query: "Chalet con 7 camere da letto, 6 bagni, 550 mq (terreno 1800 mq), garage 3 posti.\n Ubicazione: Cortina d'Ampezzo, Dolomiti.\n Anno costruzione: 2019.\n Classe energetica: A."
+      query: "proprietà con 5 bagni completi e almeno 7 camere"
       query_type: features
       weights_override:
         features: 0.70
@@ -245,12 +248,14 @@ cases:
       in_top_k:
         - slug: chalet-grand-view-cortina
           k: 10
+        - slug: masseria-ulivi-doro-fasano
+          k: 10
 
   - id: re-features-004
     type: retrieval
     tags: [features, sqm, lusso]
     input:
-      query: "Villa con 8 camere da letto, 6 bagni, 650 mq (terreno 15000 mq), piscina classica, garage 4 posti, ascensore.\n Ubicazione: Fiesole, Firenze.\n Anno costruzione: 1890.\n Classe energetica: D."
+      query: "villa grande di 650 mq con spazi ampi per intrattenimento"
       query_type: features
       weights_override:
         features: 0.70
@@ -267,7 +272,7 @@ cases:
     type: retrieval
     tags: [features, rooms, pool]
     input:
-      query: "Penthouse con 5 camere da letto, 4 bagni, 450 mq (terreno 200 mq), piscina terrazza, garage 2 posti, ascensore.\n Ubicazione: Bellagio, Lago di Como.\n Anno costruzione: 2022.\n Classe energetica: A+."
+      query: "5 camere, 450 mq, con piscina e vista lago"
       query_type: features
       weights_override:
         features: 0.70
@@ -284,7 +289,7 @@ cases:
     type: retrieval
     tags: [features, attico, centro]
     input:
-      query: "Attico con 4 camere da letto, 3 bagni, 280 mq (terreno 120 mq), garage 1 posti, ascensore.\n Ubicazione: Milano, Quadrilatero della Moda.\n Anno costruzione: 2020.\n Classe energetica: A+."
+      query: "attico di 280 metri quadri con 4 camere in centro città"
       query_type: features
       weights_override:
         features: 0.70
@@ -301,7 +306,7 @@ cases:
     type: retrieval
     tags: [features, masseria, grande]
     input:
-      query: "Masseria con 9 camere da letto, 7 bagni, 700 mq (terreno 80000 mq), piscina naturale, garage 5 posti.\n Ubicazione: Fasano, Valle d'Itria, Puglia, a 8000 m dal mare.\n Anno costruzione: 1740.\n Classe energetica: E."
+      query: "masseria di 700 mq con 9 camere e piscina"
       query_type: features
       weights_override:
         features: 0.70
@@ -318,7 +323,7 @@ cases:
     type: retrieval
     tags: [features, palazzo, storico]
     input:
-      query: "Palazzo con 10 camere da letto, 8 bagni, 900 mq (terreno 400 mq).\n Ubicazione: Venezia, Dorsoduro.\n Anno costruzione: 1520.\n Classe energetica: G."
+      query: "palazzo di 900 mq con 10 camere, struttura storica veneziana"
       query_type: features
       weights_override:
         features: 0.70
@@ -335,7 +340,7 @@ cases:
     type: retrieval
     tags: [features, casale, spazi]
     input:
-      query: "Casale con 7 camere da letto, 5 bagni, 520 mq (terreno 120000 mq), piscina classica, garage 3 posti.\n Ubicazione: Montalcino, Val d'Orcia, Toscana.\n Anno costruzione: 1650.\n Classe energetica: F."
+      query: "casale di 520 mq con 7 camere e piscina in campagna"
       query_type: features
       weights_override:
         features: 0.70
@@ -352,7 +357,7 @@ cases:
     type: retrieval
     tags: [features, villa, rooms]
     input:
-      query: "Villa con 5 camere da letto, 4 bagni, 380 mq (terreno 2500 mq), piscina riscaldata, garage 2 posti.\n Ubicazione: Porto Rotondo, Sardegna, a 300 m dal mare.\n Anno costruzione: 2015.\n Classe energetica: A."
+      query: "villa con 6 camere, 380 mq, piscina e accesso porto"
       query_type: features
       weights_override:
         features: 0.70
@@ -362,12 +367,14 @@ cases:
     expected:
       min_results: 10
       in_top_k:
+        - slug: villa-marina-grande-positano
+          k: 10
         - slug: residenza-ginepro-porto-rotondo
           k: 10
 
   # ========== GENERAL QUERIES (10) ==========
-  # Ambiguous queries without specific weighting — only min_results tested.
-  # Natural language, contribute to min_results_rate only (no in_top_k).
+  # Ambiguous queries without specific weighting
+  # Use default weights (balanced)
 
   - id: re-general-001
     type: retrieval

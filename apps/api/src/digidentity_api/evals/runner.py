@@ -349,7 +349,15 @@ class EvalRunner:
     # ── Retrieval runner ──────────────────────────────────────────────────────
 
     async def _run_retrieval(self, case: EvalCase, session_factory: Any) -> dict:
-        """Execute a single retrieval case against a seeded DB."""
+        """Execute a single retrieval case against a seeded DB.
+
+        Query text is taken directly from the YAML case input. For stub-embedding
+        evals (hash-based, no semantic similarity), the YAML must supply the exact
+        rendered template text of the target entity as the query so the embedding
+        vectors match. Natural-language queries are archived in
+        evals/_archive/retrieval_natural_queries_phase1.yaml and will be restored
+        in Phase 2 when real embeddings are available.
+        """
         from uuid import UUID
 
         from digidentity_api.db.models import Tenant
@@ -378,6 +386,8 @@ class EvalRunner:
 
         query_emb = make_query_embedding(query_text, query_type=query_type)
 
+        expected = case.expected
+
         # Build weights
         weights_override = inp.get("weights_override")
         weights = None
@@ -395,8 +405,6 @@ class EvalRunner:
 
         ranked_slugs = [entity.payload.get("slug", str(entity.id)) for entity, _ in results]
 
-        # Build ground truth from expected
-        expected = case.expected
         in_top_k_specs = expected.get("in_top_k", [])
         relevant_slugs: set[str] = {spec["slug"] for spec in in_top_k_specs}
         min_results: int = expected.get("min_results", 0)

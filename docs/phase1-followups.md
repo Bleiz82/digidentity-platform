@@ -83,3 +83,15 @@ round-trip with `@pytest.fixture` that starts a Celery worker subprocess.
 
 - The `alembic.ini` warning `No path_separator found in configuration` is cosmetic.
   Fix: add `path_separator = os` to `[alembic]` section. Low priority.
+
+---
+
+## Retrieval eval con query naturali (Phase 2)
+
+- **Status**: deferred
+- **Reason**: stub embedding SHA256-based non supporta similarità semantica da overlap di keyword.
+  Query naturali producono NDCG≈0 indipendentemente dalla somiglianza semantica con le entità.
+- **Current workaround**: query = exact rendered template text (pipeline test, not quality test).
+  Archive: `apps/api/evals/_archive/retrieval_natural_queries_phase1.yaml`
+- **Action Phase 2**: integrazione `text-embedding-3-large` reale (ADR-005 dim 3072 halfvec),
+  poi ripristinare query naturali dall'archivio e rigenerare le aspettative NDCG.

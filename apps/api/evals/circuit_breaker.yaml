@@ -68,8 +68,10 @@ cases:
 
   # ========== SCENARIO 4: Voice No Retry ==========
   # Channel=voice: 503 failure on Sonnet → NO retry (0 retries)
-  # Falls back to Opus immediately
-  # Expected: retry_count=0, fallback_to_model="opus"
+  # Falls back to Opus immediately.
+  # n_failures=1 < _FAILURE_THRESHOLD=3 → circuit stays closed.
+  # The test verifies that voice skips retry (retries_left=0 for voice)
+  # and that the router falls back to opus on the next provider in chain.
 
   - id: cb-004
     type: circuit_breaker
@@ -81,7 +83,7 @@ cases:
       channel: voice
       n_failures: 1
     expected:
-      circuit_state_after: open
+      circuit_state_after: closed
       fallback_to_model: opus
       retry_count: 0
 
