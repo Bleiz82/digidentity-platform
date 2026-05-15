@@ -1,0 +1,104 @@
+# Evaluation cases for circuit breaker correctness
+# Phase 1: Calibration mode - measure without blocking CI
+# Tests deterministic circuit breaker state transitions and fallback logic
+
+meta:
+  name: "Circuit Breaker Evaluation"
+  description: "Evaluates circuit breaker state management: open/closed transitions, per-model isolation, recovery logic, and channel-specific retry behavior (voice no-retry, web retries)."
+  calibration_mode: true
+  thresholds:
+    success_rate: 1.0  # All 5 deterministic scenarios must pass
+
+cases:
+  # ========== SCENARIO 1: 3 Failures Open Circuit ==========
+  # Three consecutive 503 failures on Sonnet within 30s → circuit opens
+  # Expected: circuit_state_after="open"
+
+  - id: cb-001
+    type: circuit_breaker
+    tags: [scenario, failures, open]
+    input:
+      scenario: "3_failures_open"
+      model: sonnet
+      fail_status: 503
+      channel: web
+      n_failures: 3
+    expected:
+      circuit_state_after: open
+      fallback_to_model: null
+      retry_count: 0
+
+  # ========== SCENARIO 2: Half-Open Recovery ==========
+  # Circuit is open → waits 5+ minutes (cooldown) → enters half-open state
+  # Next request succeeds → circuit transitions to closed
+  # Expected: circuit_state_after="closed"
+
+  - id: cb-002
+    type: circuit_breaker
+    tags: [scenario, recovery, half-open]
+    input:
+      scenario: "half_open_recovery"
+      model: sonnet
+      fail_status: null
+      channel: web
+      n_failures: 0
+    expected:
+      circuit_state_after: closed
+      fallback_to_model: null
+      retry_count: 0
+
+  # ========== SCENARIO 3: Per-Model Isolation ==========
+  # Sonnet circuit is open, but Opus circuit must remain closed
+  # One model's failures do NOT affect other models
+  # Expected: Opus circuit_state="closed" after Sonnet is open
+
+  - id: cb-003
+    type: circuit_breaker
+    tags: [scenario, isolation, per-model]
+    input:
+      scenario: "per_model_isolation"
+      model: opus
+      fail_status: null
+      channel: web
+      n_failures: 0
+    expected:
+      circuit_state_after: closed
+      fallback_to_model: null
+      retry_count: 0
+
+  # ========== SCENARIO 4: Voice No Retry ==========
+  # Channel=voice: 503 failure on Sonnet → NO retry (0 retries)
+  # Falls back to Opus immediately
+  # Expected: retry_count=0, fallback_to_model="opus"
+
+  - id: cb-004
+    type: circuit_breaker
+    tags: [scenario, voice, no-retry]
+    input:
+      scenario: "voice_no_retry"
+      model: sonnet
+      fail_status: 503
+      channel: voice
+      n_failures: 1
+    expected:
+      circuit_state_after: open
+      fallback_to_model: opus
+      retry_count: 0
+
+  # ========== SCENARIO 5: Web Retry Then Success ==========
+  # Channel=web: 503 failure on Sonnet → 1 retry → success on retry
+  # Expected: retry_count=1, final_model="sonnet" (recovered), circuit_state="closed"
+
+  - id: cb-005
+    type: circuit_breaker
+    tags: [scenario, web, retry-success]
+    input:
+      scenario: "web_retry_then_success"
+      model: sonnet
+      fail_status: 503
+      channel: web
+      n_failures: 1
+    expected:
+      circuit_state_after: closed
+      fallback_to_model: null
+      retry_count: 1
