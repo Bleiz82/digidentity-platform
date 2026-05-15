@@ -9,7 +9,7 @@ export type DirectiveType =
 
 export interface BaseDirective {
   type: DirectiveType;
-  timestamp: number;
+  timestamp?: number;
 }
 
 // Backend emits: {"type": "text", "text": "<chunk>"}
@@ -43,7 +43,7 @@ export type Directive =
   | PingDirective;
 
 const baseFields = {
-  timestamp: z.number(),
+  timestamp: z.number().optional(),
 };
 
 export const directiveSchema = z.discriminatedUnion("type", [
