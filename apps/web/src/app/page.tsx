@@ -1,8 +1,8 @@
 export default function HomePage() {
   return (
     <main>
-      <h1>DigIdentity Living Site</h1>
-      <p>Platform bootstrap — Phase 1</p>
+      <h1>Hello DigIdentity Phase 2</h1>
+      <p>SSE client foundations ready — UI conversazionale in STEP 7b.</p>
     </main>
   );
 }
