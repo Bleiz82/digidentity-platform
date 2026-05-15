@@ -48,13 +48,13 @@ describe("createConversationStream", () => {
 
     const es = MockEventSource.instances[0];
     es.simulateMessage(
-      JSON.stringify({ type: "text_chunk", content: "Hello", timestamp: 1000 })
+      JSON.stringify({ type: "text", text: "Hello", timestamp: 1000 })
     );
 
     expect(onDirective).toHaveBeenCalledOnce();
     expect(onDirective).toHaveBeenCalledWith({
-      type: "text_chunk",
-      content: "Hello",
+      type: "text",
+      text: "Hello",
       timestamp: 1000,
     });
     expect(onError).not.toHaveBeenCalled();
@@ -83,16 +83,16 @@ describe("createConversationStream", () => {
     // Stream is still alive: subsequent valid messages are processed normally
     es.simulateMessage(
       JSON.stringify({
-        type: "text_chunk",
-        content: "Still alive",
+        type: "text",
+        text: "Still alive",
         timestamp: 2000,
       })
     );
 
     expect(onDirective).toHaveBeenCalledOnce();
     expect(onDirective).toHaveBeenCalledWith({
-      type: "text_chunk",
-      content: "Still alive",
+      type: "text",
+      text: "Still alive",
       timestamp: 2000,
     });
   });

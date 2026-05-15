@@ -51,9 +51,9 @@ export function useConversationStream() {
 
     const handle = createConversationStream(conversationId, tenantId, {
       onDirective: (directive: Directive) => {
-        if (directive.type === "text_chunk") {
+        if (directive.type === "text") {
           setStreamState("streaming");
-          accumulatedRef.current += directive.content;
+          accumulatedRef.current += directive.text;
           setCurrentStreaming(accumulatedRef.current);
         } else if (directive.type === "stream_interrupted") {
           setStreamState("error");

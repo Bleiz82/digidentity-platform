@@ -21,7 +21,7 @@ beforeEach(() => {
 });
 
 describe("useConversationStream", () => {
-  it("sends user message and enters streaming state on first text_chunk", () => {
+  it("sends user message and enters streaming state on first text chunk", () => {
     const { result } = renderHook(() => useConversationStream());
 
     act(() => {
@@ -35,8 +35,8 @@ describe("useConversationStream", () => {
 
     act(() => {
       capturedOptions?.onDirective({
-        type: "text_chunk",
-        content: "Ciao",
+        type: "text",
+        text: "Ciao",
         timestamp: 1000,
       });
     });
@@ -44,7 +44,7 @@ describe("useConversationStream", () => {
     expect(result.current.streamState).toBe("streaming");
   });
 
-  it("accumulates text_chunk directives into currentStreaming", () => {
+  it("accumulates text directives into currentStreaming", () => {
     const { result } = renderHook(() => useConversationStream());
 
     act(() => {
@@ -52,9 +52,9 @@ describe("useConversationStream", () => {
     });
 
     act(() => {
-      capturedOptions?.onDirective({ type: "text_chunk", content: "Cer", timestamp: 1000 });
-      capturedOptions?.onDirective({ type: "text_chunk", content: "to", timestamp: 1001 });
-      capturedOptions?.onDirective({ type: "text_chunk", content: "!", timestamp: 1002 });
+      capturedOptions?.onDirective({ type: "text", text: "Cer", timestamp: 1000 });
+      capturedOptions?.onDirective({ type: "text", text: "to", timestamp: 1001 });
+      capturedOptions?.onDirective({ type: "text", text: "!", timestamp: 1002 });
     });
 
     expect(result.current.currentStreaming).toBe("Certo!");
@@ -68,7 +68,7 @@ describe("useConversationStream", () => {
     });
 
     act(() => {
-      capturedOptions?.onDirective({ type: "text_chunk", content: "Risposta", timestamp: 1000 });
+      capturedOptions?.onDirective({ type: "text", text: "Risposta", timestamp: 1000 });
     });
 
     act(() => {

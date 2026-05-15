@@ -22,6 +22,12 @@ export function createConversationStream(
   const url = `${baseUrl}/api/v1/conversations/${encodeURIComponent(conversationId)}/stream?tenant_id=${encodeURIComponent(tenantId)}`;
   const es = new EventSource(url);
 
+  // Guard: backend closes the connection instead of sending stream_complete.
+  // We call onComplete once and prevent double-firing if backend later adds
+  // an explicit stream_complete event.
+  let streamCompleted = false;
+  let receivedAnyChunk = false;
+
   es.onmessage = (event: MessageEvent) => {
     let raw: unknown;
     try {
@@ -44,20 +50,39 @@ export function createConversationStream(
     }
 
     if (directive.type === "stream_complete") {
-      onDirective(directive);
-      onComplete();
-      es.close();
+      if (!streamCompleted) {
+        streamCompleted = true;
+        onDirective(directive);
+        onComplete();
+        es.close();
+      }
       return;
+    }
+
+    if (directive.type === "text") {
+      receivedAnyChunk = true;
     }
 
     onDirective(directive);
   };
 
+  // Backend closes the SSE connection when the stream ends — EventSource fires
+  // onerror. If we already received chunks, treat close as normal completion.
   es.onerror = () => {
-    onError(new Error("SSE connection error"));
+    if (!streamCompleted) {
+      streamCompleted = true;
+      if (receivedAnyChunk) {
+        onComplete();
+      } else {
+        onError(new Error("SSE connection error"));
+      }
+    }
   };
 
   return {
-    close: () => es.close(),
+    close: () => {
+      streamCompleted = true;
+      es.close();
+    },
   };
 }

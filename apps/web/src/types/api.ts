@@ -1,11 +1,10 @@
 import { z } from "zod";
 
+// Directive types matching the real backend SSE contract (llm_router.py)
 export type DirectiveType =
-  | "text_chunk"
-  | "tool_call"
-  | "tool_result"
-  | "stream_complete"
+  | "text"
   | "stream_interrupted"
+  | "stream_complete"
   | "ping";
 
 export interface BaseDirective {
@@ -13,21 +12,24 @@ export interface BaseDirective {
   timestamp: number;
 }
 
-export interface TextChunkDirective extends BaseDirective {
-  type: "text_chunk";
-  content: string;
-  model?: "sonnet" | "opus";
+// Backend emits: {"type": "text", "text": "<chunk>"}
+export interface TextDirective extends BaseDirective {
+  type: "text";
+  text: string;
 }
 
-export interface StreamCompleteDirective extends BaseDirective {
-  type: "stream_complete";
-  total_tokens?: number;
-}
-
+// Backend emits: {"type": "stream_interrupted", "retry": true|false}
 export interface StreamInterruptedDirective extends BaseDirective {
   type: "stream_interrupted";
   retry: boolean;
   reason?: string;
+}
+
+// Backend does not currently emit stream_complete (stream ends by closing the
+// SSE connection). Kept in types for forward compatibility when backend adds it.
+export interface StreamCompleteDirective extends BaseDirective {
+  type: "stream_complete";
+  total_tokens?: number;
 }
 
 export interface PingDirective extends BaseDirective {
@@ -35,9 +37,9 @@ export interface PingDirective extends BaseDirective {
 }
 
 export type Directive =
-  | TextChunkDirective
-  | StreamCompleteDirective
+  | TextDirective
   | StreamInterruptedDirective
+  | StreamCompleteDirective
   | PingDirective;
 
 const baseFields = {
@@ -47,20 +49,19 @@ const baseFields = {
 export const directiveSchema = z.discriminatedUnion("type", [
   z.object({
     ...baseFields,
-    type: z.literal("text_chunk"),
-    content: z.string(),
-    model: z.enum(["sonnet", "opus"]).optional(),
-  }),
-  z.object({
-    ...baseFields,
-    type: z.literal("stream_complete"),
-    total_tokens: z.number().optional(),
+    type: z.literal("text"),
+    text: z.string(),
   }),
   z.object({
     ...baseFields,
     type: z.literal("stream_interrupted"),
     retry: z.boolean(),
     reason: z.string().optional(),
+  }),
+  z.object({
+    ...baseFields,
+    type: z.literal("stream_complete"),
+    total_tokens: z.number().optional(),
   }),
   z.object({
     ...baseFields,
