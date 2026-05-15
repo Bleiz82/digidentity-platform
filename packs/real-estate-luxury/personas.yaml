@@ -1,0 +1,19 @@
+# Personas declaration per il validator del Morph DSL
+# Ogni persona_id qui deve corrispondere a quelli in pack.yaml
+
+version: 1
+personas:
+  - id: family_relocating
+    display_name: "Famiglia in trasferimento"
+    signals:
+      - persona_score.family_relocating
+
+  - id: international_investor
+    display_name: "Investitore internazionale"
+    signals:
+      - persona_score.international_investor
+
+  - id: luxury_retiree
+    display_name: "Pensionato lifestyle"
+    signals:
+      - persona_score.luxury_retiree

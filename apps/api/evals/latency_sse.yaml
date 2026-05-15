@@ -1,0 +1,574 @@
+# Evaluation cases for SSE latency measurement
+# Phase 1: Production gate — lower-is-better, runner uses actual <= threshold for *_ms keys.
+# Baseline (commit 6ae91f8): P50=84.4ms, P95=185.3ms.
+
+meta:
+  name: "SSE Latency Evaluation"
+  description: "Latency evaluation for Server-Sent Events streaming responses. Measures p95 and p99 TTFC across 50 diverse prompts in Italian real estate context."
+  calibration_mode: false
+  baseline_run: "6ae91f8"
+  thresholds:
+    latency_p50_ms: 120   # measured 84.4ms, +40% margin for CI noise
+    latency_p95_ms: 280   # measured 185.3ms, +51% margin for CI noise
+    latency_p99_ms: 350   # safety margin above P95
+    # lower-is-better: runner passes when actual <= threshold (*_ms suffix convention)
+
+cases:
+  # ========== SHORT PROMPTS (20) ==========
+  # Single or two words, minimal processing
+
+  - id: lat-short-001
+    type: latency
+    tags: [short, greeting]
+    input:
+      prompt: "ciao"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-002
+    type: latency
+    tags: [short, greeting]
+    input:
+      prompt: "buongiorno"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-003
+    type: latency
+    tags: [short, search]
+    input:
+      prompt: "cerco casa"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-004
+    type: latency
+    tags: [short, info]
+    input:
+      prompt: "informazioni"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-005
+    type: latency
+    tags: [short, villa]
+    input:
+      prompt: "villa lussuosa"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-006
+    type: latency
+    tags: [short, price]
+    input:
+      prompt: "quanto costa"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-007
+    type: latency
+    tags: [short, location]
+    input:
+      prompt: "Sardegna"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-008
+    type: latency
+    tags: [short, feature]
+    input:
+      prompt: "piscina"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-009
+    type: latency
+    tags: [short, amenity]
+    input:
+      prompt: "spa benessere"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-010
+    type: latency
+    tags: [short, help]
+    input:
+      prompt: "aiutami"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-011
+    type: latency
+    tags: [short, thanks]
+    input:
+      prompt: "grazie mille"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-012
+    type: latency
+    tags: [short, booking]
+    input:
+      prompt: "prenotazione"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-013
+    type: latency
+    tags: [short, visit]
+    input:
+      prompt: "visita virtuale"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-014
+    type: latency
+    tags: [short, contact]
+    input:
+      prompt: "contatti agente"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-015
+    type: latency
+    tags: [short, filter]
+    input:
+      prompt: "filtra risultati"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-016
+    type: latency
+    tags: [short, budget]
+    input:
+      prompt: "budget massimo"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-017
+    type: latency
+    tags: [short, recommendation]
+    input:
+      prompt: "consigliami"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-018
+    type: latency
+    tags: [short, compare]
+    input:
+      prompt: "confronta due"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-019
+    type: latency
+    tags: [short, save]
+    input:
+      prompt: "salva preferiti"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-short-020
+    type: latency
+    tags: [short, update]
+    input:
+      prompt: "nuove proprietà"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  # ========== MEDIUM PROMPTS (20) ==========
+  # Complete sentences with 10-20 words
+
+  - id: lat-medium-001
+    type: latency
+    tags: [medium, lifestyle]
+    input:
+      prompt: "sto cercando una villa con vista sul mare per le vacanze estive in famiglia"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-002
+    type: latency
+    tags: [medium, luxury]
+    input:
+      prompt: "voglio una proprietà esclusiva nel centro di Milano con design contemporaneo"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-003
+    type: latency
+    tags: [medium, features]
+    input:
+      prompt: "mi serve una casa con almeno sei camere, piscina e spazi ampi"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-004
+    type: latency
+    tags: [medium, location]
+    input:
+      prompt: "interessato a proprietà storiche in Toscana circondate da vigneti"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-005
+    type: latency
+    tags: [medium, mountain]
+    input:
+      prompt: "cerco uno chalet di montagna dove poter sciare e riposarmi"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-006
+    type: latency
+    tags: [medium, experience]
+    input:
+      prompt: "qual è la miglior proprietà per una esperienza di lusso autentico"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-007
+    type: latency
+    tags: [medium, investment]
+    input:
+      prompt: "voglio investire in una proprietà che apprezzi nel tempo"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-008
+    type: latency
+    tags: [medium, family]
+    input:
+      prompt: "abbiamo una famiglia di cinque persone e cerchiamo una casa grande"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-009
+    type: latency
+    tags: [medium, privacy]
+    input:
+      prompt: "abbiamo bisogno di massima privacy e discretione nella scelta"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-010
+    type: latency
+    tags: [medium, lake]
+    input:
+      prompt: "mi affascina l'idea di vivere sul lago Como con vista panoramica"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-011
+    type: latency
+    tags: [medium, coast]
+    input:
+      prompt: "cerco la costa amalfitana con proprietà di lusso e accesso privato"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-012
+    type: latency
+    tags: [medium, venice]
+    input:
+      prompt: "interessato a proprietà storiche a Venezia nel cuore della città"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-013
+    type: latency
+    tags: [medium, budget]
+    input:
+      prompt: "il mio budget è importante ma cerco qualità e esclusività"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-014
+    type: latency
+    tags: [medium, modern]
+    input:
+      prompt: "voglio una proprietà moderna con tutte le tecnologie smart"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-015
+    type: latency
+    tags: [medium, restoration]
+    input:
+      prompt: "mi piacciono le proprietà da restaurare con potenziale storico"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-016
+    type: latency
+    tags: [medium, golf]
+    input:
+      prompt: "cerco proprietà vicino a campi da golf esclusivi e resort"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-017
+    type: latency
+    tags: [medium, spa]
+    input:
+      prompt: "voglio una villa con centro benessere e spa integrata"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-018
+    type: latency
+    tags: [medium, garden]
+    input:
+      prompt: "giardini curati e spazi verdi sono essenziali per la mia scelta"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-019
+    type: latency
+    tags: [medium, wine]
+    input:
+      prompt: "mi affascinano le proprietà con cantine e tradizione vinicola"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-medium-020
+    type: latency
+    tags: [medium, art]
+    input:
+      prompt: "voglio una casa che abbia valore artistico e culturale"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  # ========== COMPLEX PROMPTS (10) ==========
+  # Prompts with keywords triggering Opus (analizza, confronta, ragiona)
+
+  - id: lat-complex-001
+    type: latency
+    tags: [complex, analysis]
+    input:
+      prompt: "analizza per me le proprietà disponibili e dammi una ranking per stile di vita"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-002
+    type: latency
+    tags: [complex, comparison]
+    input:
+      prompt: "confronta due proprietà di lusso e spiega quale potrebbe crescere di valore"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-003
+    type: latency
+    tags: [complex, reasoning]
+    input:
+      prompt: "ragiona step by step su quali caratteristiche rendono una proprietà esclusiva"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-004
+    type: latency
+    tags: [complex, evaluation]
+    input:
+      prompt: "valuta il potenziale di investimento di queste tre proprietà in dettaglio"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-005
+    type: latency
+    tags: [complex, strategy]
+    input:
+      prompt: "suggeriscimi una strategia di acquisizione considerando il mercato attuale"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-006
+    type: latency
+    tags: [complex, analysis]
+    input:
+      prompt: "analizza i trend del mercato immobiliare di lusso nel prossimo anno"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-007
+    type: latency
+    tags: [complex, reasoning]
+    input:
+      prompt: "ragiona con me su quale regione italiana offre il migliore potenziale"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-008
+    type: latency
+    tags: [complex, personalization]
+    input:
+      prompt: "sulla base del mio profilo, analizza e consigliami una proprietà ideale"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-009
+    type: latency
+    tags: [complex, comparison]
+    input:
+      prompt: "confronta gli aspetti finanziari e qualità della vita di due zone"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500
+
+  - id: lat-complex-010
+    type: latency
+    tags: [complex, insight]
+    input:
+      prompt: "dammi insight approfondito su cosa rende una proprietà unica e rara"
+      n_samples: 1
+      channel: web
+    expected:
+      ttfc_p95_ms: 1500
+      ttfc_p99_ms: 2500

@@ -1,0 +1,260 @@
+# Evaluation cases for request router correctness
+# Phase 1: Production gate - blocks CI if accuracy drops below threshold
+# Tests the router's classification of simple vs complex requests
+
+meta:
+  name: "Router Correctness Evaluation"
+  description: "Evaluates the request router's ability to classify simple vs complex requests and select appropriate models (Sonnet vs Opus). Tests signal detection: keywords, context tokens, and previous scoring."
+  calibration_mode: false
+  baseline_run: "6ae91f8"
+  thresholds:
+    accuracy: 0.95  # measured 1.000, deterministic margin
+
+cases:
+  # ========== SIMPLE CASES (10) ==========
+  # Expected: complex=False, preferred_model=Sonnet
+  # Signals: no keywords, context_tokens <= 6000, tool_calls_prev=0, prev_score=null
+
+  - id: router-simple-001
+    type: routing
+    tags: [simple, greeting]
+    input:
+      prompt: "ciao buongiorno"
+      context_tokens: 100
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-002
+    type: routing
+    tags: [simple, basic-search]
+    input:
+      prompt: "cerco una villa in Sardegna"
+      context_tokens: 200
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-003
+    type: routing
+    tags: [simple, pricing]
+    input:
+      prompt: "quanto costa questa proprietà?"
+      context_tokens: 150
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-004
+    type: routing
+    tags: [simple, feature-query]
+    input:
+      prompt: "mi interessa una casa con piscina e vista mare"
+      context_tokens: 300
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-005
+    type: routing
+    tags: [simple, location]
+    input:
+      prompt: "proprietà nel centro di Milano"
+      context_tokens: 250
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-006
+    type: routing
+    tags: [simple, booking]
+    input:
+      prompt: "come posso prenotare una visita?"
+      context_tokens: 400
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-007
+    type: routing
+    tags: [simple, info]
+    input:
+      prompt: "dimmi di più su questa villa"
+      context_tokens: 500
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-008
+    type: routing
+    tags: [simple, contact]
+    input:
+      prompt: "come contatto l'agente immobiliare?"
+      context_tokens: 350
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-009
+    type: routing
+    tags: [simple, filter]
+    input:
+      prompt: "filtra i risultati per il mio budget"
+      context_tokens: 300
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  - id: router-simple-010
+    type: routing
+    tags: [simple, thank-you]
+    input:
+      prompt: "grazie per l'aiuto, molto utile"
+      context_tokens: 200
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: false
+      preferred_model: sonnet
+
+  # ========== COMPLEX CASES (10) ==========
+  # Expected: complex=True, preferred_model=Opus
+  # Signals: keywords (analizza/confronta/ragiona) OR context_tokens > 6000 OR prev_score < 0.65
+
+  - id: router-complex-001
+    type: routing
+    tags: [complex, keyword-analizza]
+    input:
+      prompt: "analizza e confronta le proprietà disponibili per stile di vita"
+      context_tokens: 7000
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-002
+    type: routing
+    tags: [complex, keyword-confronta]
+    input:
+      prompt: "confronta due ville di lusso e spiega quale è migliore"
+      context_tokens: 800
+      tool_calls_prev: 0
+      prev_score: 0.60
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-003
+    type: routing
+    tags: [complex, keyword-ragiona]
+    input:
+      prompt: "ragiona step by step su quali caratteristiche rendono esclusiva una proprietà"
+      context_tokens: 7000
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-004
+    type: routing
+    tags: [complex, high-context]
+    input:
+      prompt: "quale proprietà scegliere?"
+      context_tokens: 8000
+      tool_calls_prev: 0
+      prev_score: 0.58
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-005
+    type: routing
+    tags: [complex, high-context-token]
+    input:
+      prompt: "aiutami a decidere"
+      context_tokens: 10000
+      tool_calls_prev: 3
+      prev_score: null
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-006
+    type: routing
+    tags: [complex, low-score]
+    input:
+      prompt: "la risposta precedente non era buona, puoi fare meglio?"
+      context_tokens: 7500
+      tool_calls_prev: 1
+      prev_score: 0.50
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-007
+    type: routing
+    tags: [complex, keyword-valuta]
+    input:
+      prompt: "analizza e valuta il potenziale di investimento di queste proprietà in dettaglio"
+      context_tokens: 7000
+      tool_calls_prev: 0
+      prev_score: null
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-008
+    type: routing
+    tags: [complex, keyword-suggerisci-strategia]
+    input:
+      prompt: "analizza il mercato e suggeriscimi una strategia di acquisizione considerando le tendenze"
+      context_tokens: 2500
+      tool_calls_prev: 0
+      prev_score: 0.60
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-009
+    type: routing
+    tags: [complex, very-high-context]
+    input:
+      prompt: "quale scelta?"
+      context_tokens: 12000
+      tool_calls_prev: 0
+      prev_score: 0.60
+    expected:
+      complex: true
+      preferred_model: opus
+
+  - id: router-complex-010
+    type: routing
+    tags: [complex, low-prev-score]
+    input:
+      prompt: "puoi rifare l'analisi con più dettagli?"
+      context_tokens: 7000
+      tool_calls_prev: 2
+      prev_score: 0.55
+    expected:
+      complex: true
+      preferred_model: opus

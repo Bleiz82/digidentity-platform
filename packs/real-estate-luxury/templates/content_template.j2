@@ -1,0 +1,10 @@
+{{ title }} — {{ property_type }} a {{ location }}
+
+{{ description }}
+
+{% if price %}Prezzo: {{ price | int }}€{% endif %}
+{% if rooms %} · {{ rooms }} camere{% endif %}
+{% if sqm %} · {{ sqm }} mq{% endif %}
+{% if features %}
+Caratteristiche principali: {{ features | join(", ") }}.
+{% endif %}

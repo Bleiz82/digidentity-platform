@@ -1,0 +1,477 @@
+# Evaluation cases for real-estate-luxury pack retrieval
+# Phase 1: Calibration mode - measure without blocking CI
+
+meta:
+  name: "Real Estate Luxury Retrieval Evaluation"
+  description: "End-to-end retrieval evaluation across lifestyle, features, and general queries in Italian real estate luxury context. Uses recall@K methodology due to stub embedding semi-determinism."
+  calibration_mode: true
+  thresholds:
+    ndcg_at_10: 0.70
+    mrr: 0.60
+
+cases:
+  # ========== LIFESTYLE QUERIES (10) ==========
+  # Semantic queries about atmosphere, experience, lifestyle
+  # weights: lifestyle=0.70, content=0.15, features=0.15
+
+  - id: re-lifestyle-001
+    type: retrieval
+    tags: [lifestyle, mare, vacanze]
+    input:
+      query: "cerco una casa con vista sul mare dove rilassarsi la sera e svegliarsi al suono delle onde"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: villa-asfodelo-porto-cervo
+          k: 10
+        - slug: villa-marina-grande-positano
+          k: 10
+        - slug: residenza-ginepro-porto-rotondo
+          k: 10
+
+  - id: re-lifestyle-002
+    type: retrieval
+    tags: [lifestyle, design, fashion]
+    input:
+      query: "appartamento chic nel cuore della moda milanese, perfetto per aperitivi e cene eleganti"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: attico-duomo-quadrilatero
+          k: 10
+
+  - id: re-lifestyle-003
+    type: retrieval
+    tags: [lifestyle, family, sailing]
+    input:
+      query: "villa per una grande famiglia con piscina e accesso al porto, ideale per vacanze in vela"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: residenza-ginepro-porto-rotondo
+          k: 10
+
+  - id: re-lifestyle-004
+    type: retrieval
+    tags: [lifestyle, toscana, arte]
+    input:
+      query: "proprietà storica in Toscana circonda da vigneti, con atmosfera artistica e culturale"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: villa-dei-cipressi-fiesole
+          k: 10
+        - slug: casale-il-sasso-montalcino
+          k: 10
+
+  - id: re-lifestyle-005
+    type: retrieval
+    tags: [lifestyle, montagna, wellness]
+    input:
+      query: "rifugio di montagna dove sciare la mattina e rilassarsi in spa la sera, perfetto per il benessere"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: chalet-grand-view-cortina
+          k: 10
+
+  - id: re-lifestyle-006
+    type: retrieval
+    tags: [lifestyle, puglia, slowlife]
+    input:
+      query: "esperienza autentica di slow life pugliese, con trulli antichi e paesaggi rurali rigeneranti"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: masseria-ulivi-doro-fasano
+          k: 10
+
+  - id: re-lifestyle-007
+    type: retrieval
+    tags: [lifestyle, celebrity, lago]
+    input:
+      query: "privacy assoluta sul lago, uno spazio da vivere da star internazionale con servizi five-star"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: penthouse-lake-como-bellagio
+          k: 10
+
+  - id: re-lifestyle-008
+    type: retrieval
+    tags: [lifestyle, costiera, dolcevita]
+    input:
+      query: "la vera dolce vita costiera: sole, mare, terrazze vista infinito e cene indimenticabili"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: villa-marina-grande-positano
+          k: 10
+
+  - id: re-lifestyle-009
+    type: retrieval
+    tags: [lifestyle, venezia, storia]
+    input:
+      query: "palazzo veneziano affacciato sul Canal Grande, ricco di storia e fascino medievale"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: palazzo-venezia-dorsoduro
+          k: 10
+
+  - id: re-lifestyle-010
+    type: retrieval
+    tags: [lifestyle, vino, toscana]
+    input:
+      query: "casale immerso nei vigneti toscani, con cantine storiche e possibilità di produzione propria"
+      query_type: lifestyle
+      weights_override:
+        lifestyle: 0.70
+        content: 0.15
+        features: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: casale-il-sasso-montalcino
+          k: 10
+
+  # ========== FEATURE QUERIES (10) ==========
+  # Technical queries with specific characteristics and numbers
+  # weights: features=0.70, content=0.15, lifestyle=0.15
+
+  - id: re-features-001
+    type: retrieval
+    tags: [features, rooms, pool]
+    input:
+      query: "villa con almeno 6 camere da letto e piscina riscaldata"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: villa-asfodelo-porto-cervo
+          k: 10
+        - slug: villa-dei-cipressi-fiesole
+          k: 10
+        - slug: villa-marina-grande-positano
+          k: 10
+
+  - id: re-features-002
+    type: retrieval
+    tags: [features, sqm, centro]
+    input:
+      query: "appartamento di circa 280 mq nel centro della città, design contemporaneo"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: attico-duomo-quadrilatero
+          k: 10
+
+  - id: re-features-003
+    type: retrieval
+    tags: [features, rooms, bathrooms]
+    input:
+      query: "proprietà con 5 bagni completi e almeno 7 camere"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: chalet-grand-view-cortina
+          k: 10
+        - slug: masseria-ulivi-doro-fasano
+          k: 10
+
+  - id: re-features-004
+    type: retrieval
+    tags: [features, sqm, lusso]
+    input:
+      query: "villa grande di 650 mq con spazi ampi per intrattenimento"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: villa-dei-cipressi-fiesole
+          k: 10
+
+  - id: re-features-005
+    type: retrieval
+    tags: [features, rooms, pool]
+    input:
+      query: "5 camere, 450 mq, con piscina e vista lago"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: penthouse-lake-como-bellagio
+          k: 10
+
+  - id: re-features-006
+    type: retrieval
+    tags: [features, attico, centro]
+    input:
+      query: "attico di 280 metri quadri con 4 camere in centro città"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: attico-duomo-quadrilatero
+          k: 10
+
+  - id: re-features-007
+    type: retrieval
+    tags: [features, masseria, grande]
+    input:
+      query: "masseria di 700 mq con 9 camere e piscina"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: masseria-ulivi-doro-fasano
+          k: 10
+
+  - id: re-features-008
+    type: retrieval
+    tags: [features, palazzo, storico]
+    input:
+      query: "palazzo di 900 mq con 10 camere, struttura storica veneziana"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: palazzo-venezia-dorsoduro
+          k: 10
+
+  - id: re-features-009
+    type: retrieval
+    tags: [features, casale, spazi]
+    input:
+      query: "casale di 520 mq con 7 camere e piscina in campagna"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: casale-il-sasso-montalcino
+          k: 10
+
+  - id: re-features-010
+    type: retrieval
+    tags: [features, villa, rooms]
+    input:
+      query: "villa con 6 camere, 380 mq, piscina e accesso porto"
+      query_type: features
+      weights_override:
+        features: 0.70
+        content: 0.15
+        lifestyle: 0.15
+      limit: 10
+    expected:
+      min_results: 10
+      in_top_k:
+        - slug: villa-marina-grande-positano
+          k: 10
+        - slug: residenza-ginepro-porto-rotondo
+          k: 10
+
+  # ========== GENERAL QUERIES (10) ==========
+  # Ambiguous queries without specific weighting
+  # Use default weights (balanced)
+
+  - id: re-general-001
+    type: retrieval
+    tags: [general, luxury, sardegna]
+    input:
+      query: "qualcosa di veramente lussuoso in Sardegna dove passare le vacanze estive"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-002
+    type: retrieval
+    tags: [general, esclusivo, italia]
+    input:
+      query: "proprietà esclusiva in Italia per una famiglia importante"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-003
+    type: retrieval
+    tags: [general, investimento, lusso]
+    input:
+      query: "investimento immobiliare di pregio che apprezzi nel tempo"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-004
+    type: retrieval
+    tags: [general, residenza, arte]
+    input:
+      query: "residenza che abbia valore storico e artistico"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-005
+    type: retrieval
+    tags: [general, rifugio, pace]
+    input:
+      query: "rifugio tranquillo lontano dalla città per trovare pace"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-006
+    type: retrieval
+    tags: [general, lusso, famiglia]
+    input:
+      query: "casa di lusso adatta per tutta la famiglia"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-007
+    type: retrieval
+    tags: [general, proprieta, mare]
+    input:
+      query: "proprietà con accesso al mare in costa italiana"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-008
+    type: retrieval
+    tags: [general, prestigio, eleganza]
+    input:
+      query: "una casa che trasmetta prestigio ed eleganza"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-009
+    type: retrieval
+    tags: [general, vintage, design]
+    input:
+      query: "proprietà con carattere storico e design curato"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10
+
+  - id: re-general-010
+    type: retrieval
+    tags: [general, esclusivita, zona]
+    input:
+      query: "zona esclusiva con accesso limitato e discrezione garantita"
+      query_type: neutral
+      limit: 10
+    expected:
+      min_results: 10

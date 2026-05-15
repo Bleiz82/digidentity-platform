@@ -1,0 +1,114 @@
+version: 1
+target_page: homepage
+description: "Morph rules homepage real-estate-luxury — 3 personas Phase 1"
+
+rules:
+  - id: family-relocating-hero
+    priority: 30
+    description: "Famiglia in trasferimento: hero family-friendly amenities"
+    when:
+      signal: persona_score.family_relocating
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: family_hero_v1
+      - directive: show
+        target: school_proximity_badge
+      - directive: hide
+        target: investment_roi_widget
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: FamilyAmenitiesHighlight
+          props:
+            headline: "Spazi pensati per vivere, non solo per abitare"
+            cta_text: "Esplora gli immobili family-friendly"
+          position: prepend
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_family_relocating
+          payload:
+            rule_id: family-relocating-hero
+
+  - id: investor-roi-hero
+    priority: 20
+    description: "Investitore: hero con proiezione ROI e mercato"
+    when:
+      signal: persona_score.international_investor
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: investor_hero_v1
+      - directive: show
+        target: investment_roi_widget
+      - directive: hide
+        target: school_proximity_badge
+      - directive: rewrite_copy
+        target: hero_headline
+        params:
+          variant: investor_headline_v1
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: RoiProjectionBanner
+          props:
+            headline: "Rendimento netto stimato: 4–6% annuo su Costa Smeralda"
+            cta_text: "Richiedi analisi di portafoglio"
+          position: prepend
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_investor
+          payload:
+            rule_id: investor-roi-hero
+
+  - id: luxury-retiree-lifestyle-hero
+    priority: 10
+    description: "Pensionato lifestyle: hero esperienziale, wellness, concierge"
+    when:
+      signal: persona_score.luxury_retiree
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: lifestyle_hero_v1
+      - directive: hide
+        target: investment_roi_widget
+      - directive: hide
+        target: school_proximity_badge
+      - directive: show
+        target: concierge_chat_invite
+        params:
+          delay_ms: 3000
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: LifestyleExperienceTeaser
+          props:
+            headline: "Ogni mattina è quella che hai sempre immaginato"
+            cta_text: "Scopri le proprietà con vista esclusiva"
+          position: prepend
+      - directive: trigger_agent
+        target: _self
+        params:
+          persona_aware: true
+          intent: lifestyle_welcome
+          delay_ms: 5000
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_luxury_retiree
+          payload:
+            rule_id: luxury-retiree-lifestyle-hero
+
+fallback:
+  - directive: track
+    target: _self
+    params:
+      event_name: morph_no_rule_matched_homepage
