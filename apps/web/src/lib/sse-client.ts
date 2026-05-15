@@ -18,7 +18,8 @@ export function createConversationStream(
 ): StreamHandle {
   const { onDirective, onError, onComplete } = options;
 
-  const url = `/api/v1/conversations/${encodeURIComponent(conversationId)}/stream?tenant_id=${encodeURIComponent(tenantId)}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+  const url = `${baseUrl}/api/v1/conversations/${encodeURIComponent(conversationId)}/stream?tenant_id=${encodeURIComponent(tenantId)}`;
   const es = new EventSource(url);
 
   es.onmessage = (event: MessageEvent) => {
