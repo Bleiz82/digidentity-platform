@@ -1,7 +1,8 @@
 """SSE endpoint for conversational streaming — ADR-002.
 
 GET /conversations/{conversation_id}/stream
-  - Requires X-Tenant-Id header (UUID)
+  - Tenant resolved from X-Tenant-Id header (priority) or ?tenant_id query param
+    (fallback required for EventSource browser API, which cannot set custom headers)
   - Streams LLM chunks as SSE events
   - Pings every 15s to keep connection alive
   - Negotiates Accept header: 406 if client only accepts application/json
@@ -12,7 +13,7 @@ import json
 from uuid import UUID
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import Response, StreamingResponse
 
 from digidentity_api.engines.errors import CircuitOpenError
@@ -29,14 +30,27 @@ _llm_router = LLMRouter()
 # ── Tenant dependency ─────────────────────────────────────────────────────────
 
 
-async def get_tenant_id(request: Request) -> UUID:
-    tid = request.headers.get("X-Tenant-Id")
-    if not tid:
-        raise HTTPException(status_code=401, detail="X-Tenant-Id header required")
-    try:
-        return UUID(tid)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="X-Tenant-Id must be a valid UUID")
+async def get_tenant_id(
+    request: Request,
+    tenant_id_query: UUID | None = Query(None, alias="tenant_id"),
+) -> UUID:
+    """Resolve tenant from X-Tenant-Id header (priority) or ?tenant_id query param.
+
+    Header takes priority when both are present. Invalid header UUID → 400 (backward
+    compat). Invalid query UUID → 422 (FastAPI auto-validation). Missing both → 401.
+    """
+    tid_header = request.headers.get("X-Tenant-Id")
+    if tid_header is not None:
+        try:
+            return UUID(tid_header)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="X-Tenant-Id must be a valid UUID")
+    if tenant_id_query is not None:
+        return tenant_id_query
+    raise HTTPException(
+        status_code=401,
+        detail="tenant_id required via X-Tenant-Id header or ?tenant_id query parameter",
+    )
 
 
 # ── SSE endpoint ──────────────────────────────────────────────────────────────

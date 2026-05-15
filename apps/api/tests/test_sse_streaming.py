@@ -177,6 +177,33 @@ async def test_sse_ttfc_under_800ms(client: AsyncClient) -> None:
         assert first_chunk_time < 0.8, f"TTFC was {first_chunk_time:.3f}s — expected < 800ms"
 
 
+# ── Query-string tenant_id (EventSource browser API path) ────────────────────
+
+
+@pytest.mark.asyncio
+async def test_sse_accepts_tenant_id_via_query_string(client: AsyncClient) -> None:
+    """?tenant_id=<valid-uuid> without X-Tenant-Id header → 200 and stream starts."""
+    with patch("digidentity_api.tasks.usage.log_usage") as mock_task:
+        mock_task.delay = MagicMock()
+        async with client.stream(
+            "GET",
+            f"/api/v1/conversations/{VALID_CONV_ID}/stream",
+            params={"prompt": "ciao", "tenant_id": VALID_TENANT_ID},
+        ) as response:
+            assert response.status_code == 200
+            assert "text/event-stream" in response.headers.get("content-type", "")
+
+
+@pytest.mark.asyncio
+async def test_sse_query_string_invalid_uuid_rejected(client: AsyncClient) -> None:
+    """?tenant_id=pippo (not a UUID) → 422 (FastAPI query param validation)."""
+    response = await client.get(
+        f"/api/v1/conversations/{VALID_CONV_ID}/stream",
+        params={"tenant_id": "pippo"},
+    )
+    assert response.status_code == 422
+
+
 @pytest.mark.asyncio
 async def test_sse_fail_mode_503(client: AsyncClient) -> None:
     """X-Mock-Fail-Mode: 503 on all providers → stream_interrupted events or error."""

@@ -28,6 +28,15 @@ for CI runner noise.
 
 ## Resolved in Phase 2
 
+### tenant_id via query string per EventSource compat (STEP 7b.1, ADR-002 amendment)
+
+SSE endpoint now accepts tenant ID from `?tenant_id=<uuid>` query parameter as fallback
+to `X-Tenant-Id` header. Required because browser EventSource API cannot set custom
+headers. Header retains priority when both are present. Backward compatible: all
+existing header-based tests remain green. Fix validated by 2 new tests (60/60 passing).
+
+---
+
 ### ADR-005 amendments — halfvec(3072), RAM revision, shared HNSW (ADR-006)
 
 Formalized in ADR-006 (2026-05-15). Three amendments implemented in commit `469532a`
