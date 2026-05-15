@@ -1,6 +1,7 @@
 # ADR-005: Multi-Embedding Strategy per Knowledge Graph Engine
 
 - **Status**: proposed
+- **Amended by**: ADR-006 (2026-05-15) — see amendment for halfvec(3072), RAM revision, shared HNSW strategy
 - **Date**: 2026-05-14
 - **Authors**: Stefano Corda
 - **BIBLE refs**: §6.1, §5, §9, §10.3

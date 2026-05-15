@@ -26,6 +26,23 @@ for CI runner noise.
 
 ---
 
+## Resolved in Phase 2
+
+### ADR-005 amendments — halfvec(3072), RAM revision, shared HNSW (ADR-006)
+
+Formalized in ADR-006 (2026-05-15). Three amendments implemented in commit `469532a`
+and migration `alembic/versions/002_entities_hnsw.py`:
+
+- **Amendment 1**: `vector(3072)` → `halfvec(3072)` for HNSW compatibility with
+  pgvector 0.8.2 (2000-dim cap on `vector`-type HNSW). Recall impact 0.1–0.5%.
+- **Amendment 2**: RAM working set revised to ~13–18 GB/tenant (halved from ~25–35 GB)
+  due to float16 storage. DB host provisioning revised to 192 GB (from 384 GB).
+- **Amendment 3**: Shared HNSW with RLS FORCE confirmed over per-tenant isolated index.
+  Isolation validated by `test_vector_search_rls_isolation`. Threshold for revisiting:
+  p95 latency > 50 ms on a large tenant.
+
+---
+
 ## Resolved in Phase 1
 
 - **conversation_id path validation** (STEP 5.1): `GET /conversations/{id}/stream` now
@@ -94,31 +111,6 @@ CI pipeline defined but not activated. Activate after Phase 1 DoD merge to `main
 
 Static analysis to ensure all queries on tenant-scoped tables are inside `with_tenant()`.
 Pre-commit hook + CI step. Blocks Phase 1 DoD merge to `main`.
-
----
-
-## ADR formal amendments pending
-
-These decisions were made during Phase 1 implementation and documented only in commit messages.
-Formal ADR updates required before Phase 1 DoD sign-off:
-
-### ADR-005 — halfvec(3072) instead of vector(3072) for HNSW
-
-pgvector 0.8.2 caps `vector` type HNSW at 2000 dimensions. `halfvec(3072)` supports HNSW
-up to 16000 dims. RAM working set halved to ~13–18 GB/tenant (vs ~25–35 GB in ADR-005).
-Impacts: §Decisione row D, §Negative consequences (RAM estimate), §Conseguenze neutre.
-
-### ADR-005 — Shared HNSW with RLS (not per-tenant isolated index)
-
-ADR-005 originally specified per-tenant isolated HNSW indexes. Phase 1 uses a shared index
-with RLS post-filtering (per the amendment in commit `0e9ac18`).
-Formal amendment must update §Decisione table and §Conseguenze to reflect the shared index
-tradeoff (simpler ops, candidate over-fetch at scale).
-
-### ADR-005 — RAM working set revised
-
-With halfvec + shared index, the RAM estimate per tenant is significantly lower than the
-original §D table. The "worst-case multi-tenant" scenario should be recalculated.
 
 ---
 
