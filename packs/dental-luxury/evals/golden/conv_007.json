@@ -1,0 +1,33 @@
+{
+  "id": "conv_007",
+  "scenario": "anxious_patient_fear_first_visit",
+  "persona_expected": "anxious_patient",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho molta paura del dentista e non ci vado da tanti anni. Ho bisogno di cure ma solo l'idea mi fa venire l'ansia. Avete un approccio particolare per chi è come me?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "validates_anxiety",
+        "explains_gentle_approach",
+        "mentions_sedation_option",
+        "offers_no_pressure_first_visit"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 25,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

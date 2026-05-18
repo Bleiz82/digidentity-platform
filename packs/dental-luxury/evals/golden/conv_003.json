@@ -1,0 +1,34 @@
+{
+  "id": "conv_003",
+  "scenario": "appearance_seeker_aligners_wedding",
+  "persona_expected": "appearance_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Mi sposo tra 8 mesi e vorrei raddrizzare i denti senza brackets metallici. Gli allineatori invisibili fanno al caso mio?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_clear_aligners",
+        "addresses_timeline",
+        "mentions_aesthetics"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

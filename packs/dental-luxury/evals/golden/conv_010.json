@@ -1,0 +1,35 @@
+{
+  "id": "conv_010",
+  "scenario": "dental_tourist_milan_full_smile_makeover",
+  "persona_expected": "dental_tourist",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Vengo dalla Germania. Voglio fare un completo smile makeover: faccette, sbiancamento e magari qualche impianto. Quanto tempo devo restare in Italia? Avete un coordinatore che parla inglese?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_treatment_timeline",
+        "confirms_english_support",
+        "describes_all_inclusive",
+        "offers_remote_planning"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 45,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

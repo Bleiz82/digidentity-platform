@@ -1,0 +1,35 @@
+{
+  "id": "conv_008",
+  "scenario": "anxious_patient_sedation_conscious_inquiry",
+  "persona_expected": "anxious_patient",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho sentito della sedazione cosciente. Sono molto nervoso per qualsiasi intervento dentistico. Come funziona esattamente? È sicura?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_conscious_sedation",
+        "reassures_on_safety",
+        "describes_experience",
+        "offers_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 30,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

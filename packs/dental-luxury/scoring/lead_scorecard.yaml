@@ -1,0 +1,78 @@
+version: "1.0"
+description: "Lead scoring scorecard for dental-luxury pack — BIBLE §6.5. GDPR: solo segnali di intent commerciale, nessun dato sanitario/diagnostico."
+
+# Each signal: id (matches ScoringSignal.signal_name), weight (default points per
+# occurrence, 0-100 scale), max_score (cap for this signal), description.
+# NOTA GDPR: Nessun segnale su diagnosi, condizioni mediche o storia clinica.
+# Solo comportamento commerciale osservabile (navigazione, richieste, contatti).
+signals:
+  - id: contact_requested
+    weight: 20
+    max_score: 20
+    description: "Visitor explicitly requested contact or consultation"
+
+  - id: appointment_booked
+    weight: 25
+    max_score: 25
+    description: "Visitor completed appointment booking flow"
+
+  - id: specific_treatment_asked
+    weight: 12
+    max_score: 12
+    description: "Visitor asked about a specific treatment (commercial intent)"
+
+  - id: budget_mentioned
+    weight: 10
+    max_score: 10
+    description: "Visitor mentioned a budget or asked about pricing"
+
+  - id: travel_origin_mentioned
+    weight: 8
+    max_score: 8
+    description: "Visitor indicated travel origin (dental tourist signal)"
+
+  - id: return_visitor
+    weight: 10
+    max_score: 10
+    description: "Visitor has returned from a previous session"
+
+  - id: page_dwell_long
+    weight: 7
+    max_score: 7
+    description: "Visitor spent >3 minutes on a treatment page"
+
+  - id: multiple_treatments_viewed
+    weight: 6
+    max_score: 6
+    description: "Visitor viewed 3 or more distinct treatment pages"
+
+  - id: before_after_gallery_viewed
+    weight: 7
+    max_score: 7
+    description: "Visitor engaged with before/after gallery (strong aesthetic intent)"
+
+  - id: social_proof_engaged
+    weight: 5
+    max_score: 5
+    description: "Visitor read reviews or patient testimonials"
+
+# Score buckets — aligned with BIBLE §2.5 thresholds
+buckets:
+  cold:
+    min: 0
+    max: 29
+  warm:
+    min: 30
+    max: 69
+  hot:
+    min: 70
+    max: 100
+
+# Flat point modifier added to final score by top inferred persona
+# Positive = bonus, negative = malus. Applied before bucket assignment.
+persona_modifiers:
+  appearance_seeker: 5
+  function_seeker: 8
+  anxious_patient: 2
+  dental_tourist: 6
+  browsing: -5

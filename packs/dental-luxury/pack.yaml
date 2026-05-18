@@ -1,0 +1,57 @@
+# DigIdentity Pack — dental-luxury v0.1
+# BIBLE §5: fat core / lean packs
+
+id: dental-luxury
+version: "0.1.0"
+vertical: dental
+language: it
+
+# Search weight overrides (ADR-005 Area C — 3 query types)
+search:
+  weights:
+    default:
+      content: 0.50
+      lifestyle: 0.20
+      features: 0.30
+    lifestyle_search:
+      content: 0.20
+      lifestyle: 0.60
+      features: 0.20
+    feature_search:
+      content: 0.20
+      lifestyle: 0.10
+      features: 0.70
+    general:
+      content: 0.50
+      lifestyle: 0.20
+      features: 0.30
+
+# Personas (referenced by morph rules)
+personas:
+  - id: appearance_seeker
+    label: "Cercatore di estetica dentale"
+    description: >
+      Visitatore interessato principalmente all'estetica del sorriso:
+      sbiancamento, faccette, ortodonzia estetica. Motivato da risultati
+      visibili e fotogenici. Sensibile a gallery before/after e testimonianze.
+  - id: function_seeker
+    label: "Cercatore di funzionalità"
+    description: >
+      Visitatore con esigenza funzionale concreta: implantologia, protesi,
+      ricostruzioni. Orientato a risolvere un problema. Sensibile a
+      affidabilità, durata e garanzie sul trattamento.
+  - id: anxious_patient
+    label: "Paziente ansioso"
+    description: >
+      Visitatore con forte ansia da studio dentistico. Cerca rassicurazioni
+      su dolore, sedazione cosciente, approccio empatico. Richiede
+      comunicazione calma, tempi chiari e gestione del panico.
+  - id: dental_tourist
+    label: "Turista dentale"
+    description: >
+      Visitatore che proviene da altra città o paese e sceglie la clinica
+      per la combinazione qualità/prezzo/esperienza. Sensibile a pacchetti
+      all-inclusive, logistica, preventivi dettagliati e gestione remota.
+
+# Morph rules location
+morph_rules_path: morph_rules/

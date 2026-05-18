@@ -1,0 +1,35 @@
+{
+  "id": "conv_009",
+  "scenario": "dental_tourist_london_implant_package",
+  "persona_expected": "dental_tourist",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Abito a Londra e ho bisogno di un impianto. Qui costa il doppio rispetto all'Italia. Come funziona praticamente venire da voi? Avete pacchetti per chi viene dall'estero?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_remote_consultation",
+        "describes_package",
+        "mentions_logistics",
+        "offers_detailed_quote"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

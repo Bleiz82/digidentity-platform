@@ -1,0 +1,34 @@
+{
+  "id": "conv_004",
+  "scenario": "function_seeker_implant_missing_molar",
+  "persona_expected": "function_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho un molare mancante da due anni. Mastico male da quel lato. Quanto costa un impianto e quanto dura il trattamento?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_implant_process",
+        "mentions_osseointegration",
+        "offers_free_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

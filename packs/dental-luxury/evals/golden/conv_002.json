@@ -1,0 +1,33 @@
+{
+  "id": "conv_002",
+  "scenario": "appearance_seeker_whitening_coffee_stains",
+  "persona_expected": "appearance_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Bevo molto caffè e i miei denti si sono scuriti nel tempo. Vorrei un sbiancamento professionale. Quali opzioni avete?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_whitening_options",
+        "mentions_stain_removal",
+        "offers_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 30,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "conv_005",
+  "scenario": "function_seeker_full_arch_prosthesis",
+  "persona_expected": "function_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho molti denti compromessi nell'arcata superiore. Il mio dentista mi ha parlato di protesi fissa su impianti. Avete esperienza con questo tipo di intervento?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_full_arch_procedure",
+        "mentions_all_on_four",
+        "emphasizes_experience"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 35,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

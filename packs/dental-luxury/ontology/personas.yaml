@@ -1,0 +1,53 @@
+version: "1.0"
+pack_id: dental-luxury
+description: "Vertical personas for dental-luxury — extends packs/shared/personas.yaml. BIBLE §5."
+
+personas:
+  - id: appearance_seeker
+    display_name_it: "Cercatore di Estetica"
+    display_name_en: "Appearance Seeker"
+    scope: vertical
+    description: "Visitor focused on aesthetic dentistry: whitening, veneers, clear aligners. Motivated by visible smile transformation."
+    aliases:
+      - smile_seeker
+    inference_hints:
+      - "utm_term contains sbiancamento|faccette|allineatori|smile|estetica|whitening|veneers|aligners"
+      - "utm_campaign contains smile|before.after|estetica|beauty"
+      - "organic search with sorriso|faccette|sbiancamento|trasformazione terms"
+
+  - id: function_seeker
+    display_name_it: "Cercatore di Funzionalità"
+    display_name_en: "Function Seeker"
+    scope: vertical
+    description: "Visitor with concrete functional need: implants, prosthetics, reconstructions. Focused on reliability and long-term results."
+    aliases:
+      - implant_seeker
+    inference_hints:
+      - "utm_term contains impianto|protesi|ricostruzione|implant|prosthetic|missing.tooth"
+      - "utm_campaign contains implant|protesi|funzional"
+      - "organic search with dente.mancante|implanto|protesi terms"
+
+  - id: anxious_patient
+    display_name_it: "Paziente Ansioso"
+    display_name_en: "Anxious Patient"
+    scope: vertical
+    description: "Visitor with strong dental anxiety. Needs reassurance about pain management, sedation, and empathetic care."
+    aliases:
+      - fearful_patient
+    inference_hints:
+      - "utm_term contains paura|ansia|sedazione|dolore|fear|anxiety|sedation|painless"
+      - "utm_campaign contains painless|senza.paura|serenity|gentle"
+      - "organic search with dentista.senza.dolore|sedazione.cosciente terms"
+
+  - id: dental_tourist
+    display_name_it: "Turista Dentale"
+    display_name_en: "Dental Tourist"
+    scope: vertical
+    description: "Visitor traveling from another city or country for dental treatment. Sensitive to all-inclusive packages, logistics, and remote consultation."
+    aliases:
+      - dental_traveler
+    inference_hints:
+      - "utm_term contains preventivo|pacchetto|viaggio|travel|package|abroad|estero"
+      - "utm_campaign contains dental.tourism|turismo.dentale|package"
+      - "utm_source=foreign_search_engine"
+      - "geo: country != IT or region != local_province"

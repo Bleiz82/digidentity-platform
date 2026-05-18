@@ -1,0 +1,34 @@
+{
+  "id": "conv_001",
+  "scenario": "appearance_seeker_veneers_natural_result",
+  "persona_expected": "appearance_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Vorrei fare le faccette in ceramica. Ho sentito che il risultato è molto naturale — è vero? Quanto durano?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_veneers_naturally",
+        "mentions_durability",
+        "shows_examples"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 35,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

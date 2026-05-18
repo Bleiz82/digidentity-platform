@@ -1,0 +1,170 @@
+version: 1
+target_page: homepage
+description: "Morph rules homepage dental-luxury — 4 personas + return visitor"
+
+rules:
+  - id: appearance-seeker-hero
+    priority: 40
+    description: "Cercatore estetica: hero before/after gallery e CTA sorriso"
+    when:
+      signal: persona_score.appearance_seeker
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: smile_transformation_hero_v1
+      - directive: show
+        target: before_after_gallery
+      - directive: hide
+        target: implant_promo_banner
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: SmileTransformationTeaser
+          props:
+            headline: "Il sorriso che hai sempre immaginato — in poche sedute"
+            cta_text: "Scopri i trattamenti estetici"
+          position: prepend
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_appearance_seeker
+          payload:
+            rule_id: appearance-seeker-hero
+
+  - id: function-seeker-hero
+    priority: 30
+    description: "Cercatore funzionalità: hero implantologia con garanzie"
+    when:
+      signal: persona_score.function_seeker
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: implant_confidence_hero_v1
+      - directive: show
+        target: implant_promo_banner
+      - directive: show
+        target: warranty_badge
+      - directive: hide
+        target: before_after_gallery
+      - directive: rewrite_copy
+        target: hero_headline
+        params:
+          variant: implant_headline_v1
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: ImplantGuaranteeBanner
+          props:
+            headline: "Impianti con garanzia decennale — tecnologia all'avanguardia"
+            cta_text: "Richiedi consulenza gratuita"
+          position: prepend
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_function_seeker
+          payload:
+            rule_id: function-seeker-hero
+
+  - id: anxious-patient-reassurance
+    priority: 50
+    description: "Paziente ansioso: hero empatico, sedazione e team rassicurante"
+    when:
+      signal: persona_score.anxious_patient
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: gentle_care_hero_v1
+      - directive: show
+        target: sedation_info_block
+      - directive: hide
+        target: implant_promo_banner
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: AnxietyReassuranceBlock
+          props:
+            headline: "Nessun dolore, nessuna paura — ti accompagniamo a ogni passo"
+            cta_text: "Parla con il nostro team"
+          position: prepend
+      - directive: trigger_agent
+        target: _self
+        params:
+          persona_aware: true
+          intent: anxiety_welcome
+          delay_ms: 4000
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_anxious_patient
+          payload:
+            rule_id: anxious-patient-reassurance
+
+  - id: dental-tourist-package
+    priority: 20
+    description: "Turista dentale: hero pacchetti all-inclusive con logistica"
+    when:
+      signal: persona_score.dental_tourist
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: dental_package_hero_v1
+      - directive: show
+        target: all_inclusive_package_block
+      - directive: show
+        target: remote_consultation_cta
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: DentalPackageSummary
+          props:
+            headline: "Trattamenti di eccellenza — tutto incluso, dalla consulenza al soggiorno"
+            cta_text: "Richiedi preventivo gratuito"
+          position: prepend
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_dental_tourist
+          payload:
+            rule_id: dental-tourist-package
+
+  - id: return-visitor-welcome
+    priority: 10
+    description: "Visitatore di ritorno: personalizzazione contestuale e CTA riprendere"
+    when:
+      signal: return_visitor
+      gte: 1
+    do:
+      - directive: inject
+        target: header_slot
+        params:
+          component: ReturnVisitorGreeting
+          props:
+            headline: "Bentornato — riprendi dal punto in cui eri rimasto"
+            cta_text: "Visualizza la tua consulenza"
+          position: prepend
+      - directive: trigger_agent
+        target: _self
+        params:
+          persona_aware: true
+          intent: return_visitor_followup
+          delay_ms: 2000
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_return_visitor
+          payload:
+            rule_id: return-visitor-welcome
+
+fallback:
+  - directive: track
+    target: _self
+    params:
+      event_name: morph_no_rule_matched_homepage

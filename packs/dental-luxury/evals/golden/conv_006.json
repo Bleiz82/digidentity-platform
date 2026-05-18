@@ -1,0 +1,33 @@
+{
+  "id": "conv_006",
+  "scenario": "function_seeker_warranty_longevity_question",
+  "persona_expected": "function_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Prima di decidere voglio capire: gli impianti che fate hanno garanzie? Ho sentito che alcune cliniche offrono 10 anni. Voi cosa offrite?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_warranty",
+        "mentions_ten_year_guarantee",
+        "discusses_maintenance"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 30,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}
