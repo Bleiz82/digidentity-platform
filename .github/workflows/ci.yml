@@ -32,6 +32,8 @@ jobs:
       EMBEDDING_PROVIDER: mock
       ANTHROPIC_API_KEY: ""
       OPENAI_API_KEY: ""
+      # Disable Ryuk cleanup container — avoids Docker-in-Docker socket issues in CI
+      TESTCONTAINERS_RYUK_DISABLED: "true"
 
     steps:
       - uses: actions/checkout@v4
@@ -44,6 +46,9 @@ jobs:
       - name: Install dependencies
         working-directory: apps/api
         run: uv sync --group dev
+
+      - name: Pre-pull testcontainers image
+        run: docker pull pgvector/pgvector:pg16
 
       - name: Run Alembic migrations
         working-directory: apps/api
@@ -104,7 +109,8 @@ jobs:
         run: uv sync --group dev
 
       - name: Lint pack morph rules
-        run: uv run --directory apps/api python tools/lint-pack/lint_pack.py --all
+        working-directory: apps/api
+        run: uv run python ../../tools/lint-pack/lint_pack.py --all
 
   # ── 4. Golden eval gate — real-estate-luxury ──────────────────────────────
   eval-real-estate-luxury:
@@ -155,4 +161,5 @@ jobs:
         run: uv sync --group dev
 
       - name: Check ADR statuses
-        run: uv run --directory apps/api python tools/adr-check.py
+        working-directory: apps/api
+        run: uv run python ../../tools/adr-check.py

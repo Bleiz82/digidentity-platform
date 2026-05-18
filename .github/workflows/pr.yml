@@ -31,6 +31,7 @@ jobs:
       EMBEDDING_PROVIDER: mock
       ANTHROPIC_API_KEY: ""
       OPENAI_API_KEY: ""
+      TESTCONTAINERS_RYUK_DISABLED: "true"
 
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +44,9 @@ jobs:
       - name: Install dependencies
         working-directory: apps/api
         run: uv sync --group dev
+
+      - name: Pre-pull testcontainers image
+        run: docker pull pgvector/pgvector:pg16
 
       - name: Run Alembic migrations
         working-directory: apps/api
@@ -95,4 +99,5 @@ jobs:
         run: uv sync --group dev
 
       - name: Lint pack morph rules
-        run: uv run --directory apps/api python tools/lint-pack/lint_pack.py --all
+        working-directory: apps/api
+        run: uv run python ../../tools/lint-pack/lint_pack.py --all
