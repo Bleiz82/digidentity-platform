@@ -1,0 +1,76 @@
+version: "1.0"
+description: "Lead scoring scorecard for real-estate-luxury pack — BIBLE §6.5"
+
+# Each signal: id (matches ScoringSignal.signal_name), weight (default points per
+# occurrence, 0-100 scale), max_score (cap for this signal), description.
+signals:
+  - id: budget_explicit
+    weight: 15
+    max_score: 15
+    description: "Visitor stated a concrete budget range"
+
+  - id: location_specific
+    weight: 10
+    max_score: 10
+    description: "Visitor named a specific location or neighbourhood"
+
+  - id: timeline_urgent
+    weight: 12
+    max_score: 12
+    description: "Visitor expressed urgency (e.g. 'by end of year')"
+
+  - id: family_mentioned
+    weight: 8
+    max_score: 8
+    description: "Visitor mentioned family, children, or relocation needs"
+
+  - id: contact_provided
+    weight: 20
+    max_score: 20
+    description: "Visitor shared contact details (email, phone)"
+
+  - id: return_visitor
+    weight: 10
+    max_score: 10
+    description: "Visitor has returned from a previous session"
+
+  - id: dwell_long
+    weight: 8
+    max_score: 8
+    description: "Visitor spent >3 minutes on a property detail page"
+
+  - id: multi_property_view
+    weight: 7
+    max_score: 7
+    description: "Visitor viewed 3 or more distinct properties"
+
+  - id: financing_question
+    weight: 10
+    max_score: 10
+    description: "Visitor asked about mortgage, financing, or payment terms"
+
+  - id: viewing_requested
+    weight: 25
+    max_score: 25
+    description: "Visitor explicitly requested a property viewing or appointment"
+
+# Score buckets — aligned with BIBLE §2.5 thresholds
+buckets:
+  cold:
+    min: 0
+    max: 29
+  warm:
+    min: 30
+    max: 69
+  hot:
+    min: 70
+    max: 100
+
+# Flat point modifier added to final score by top inferred persona
+# Positive = bonus, negative = malus. Applied before bucket assignment.
+persona_modifiers:
+  international_investor: 10
+  luxury_retiree: 5
+  family_relocating: 3
+  holiday_seeker: 0
+  browsing: -5

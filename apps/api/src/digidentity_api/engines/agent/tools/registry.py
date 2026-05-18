@@ -1,6 +1,9 @@
 """ToolRegistry — executes the 3 built-in agent tools.
 
 All execution is pure in-memory for Phase 2; no shell, no filesystem writes.
+If session + visitor_session_id are provided, lead_update_score also persists
+the accumulated score via qualify.persistence.upsert_lead (back-compat: in-memory
+only when session is not available).
 """
 
 from __future__ import annotations
@@ -23,8 +26,15 @@ class LeadScoreState:
 class ToolRegistry:
     """Executes tool calls by name, maintaining per-conversation lead state."""
 
-    def __init__(self, tenant_id: str | UUID) -> None:
+    def __init__(
+        self,
+        tenant_id: str | UUID,
+        session: Any = None,
+        visitor_session_id: UUID | None = None,
+    ) -> None:
         self.tenant_id = str(tenant_id)
+        self._session = session
+        self._visitor_session_id = visitor_session_id
         self._lead_state: LeadScoreState = LeadScoreState()
 
     # ── Schema accessor ───────────────────────────────────────────────────────
@@ -63,7 +73,11 @@ class ToolRegistry:
         return {"directive": directive, "emitted": True}
 
     def lead_update_score(self, signal: str, weight: float) -> dict[str, Any]:
-        """Record scoring signal and return updated total."""
+        """Record scoring signal and return updated total (in-memory accumulator).
+
+        If session + visitor_session_id are configured, the caller should invoke
+        `persist_lead_score()` after this to flush to DB.
+        """
         self._lead_state.signals.append({"signal": signal, "weight": weight})
         self._lead_state.total = min(1.0, self._lead_state.total + weight)
         return {
@@ -72,6 +86,44 @@ class ToolRegistry:
             "total": round(self._lead_state.total, 4),
             "signal_count": len(self._lead_state.signals),
         }
+
+    async def persist_lead_score(self) -> None:
+        """Flush accumulated lead score to DB (no-op if session not configured)."""
+        if self._session is None or self._visitor_session_id is None:
+            return
+
+        from datetime import UTC, datetime  # noqa: PLC0415
+
+        from digidentity_api.engines.qualify.persistence import upsert_lead  # noqa: PLC0415
+        from digidentity_api.schemas.lead import LeadScore, ScoringSignal  # noqa: PLC0415
+
+        signals = [
+            ScoringSignal(
+                signal_name=s["signal"],
+                weight=s["weight"],
+                emitted_at=datetime.now(UTC),
+            )
+            for s in self._lead_state.signals
+        ]
+
+        # Convert in-memory [0,1] total to 0-100 scale
+        score_100 = min(100.0, self._lead_state.total * 100.0)
+        bucket = "hot" if score_100 >= 70 else "warm" if score_100 >= 30 else "cold"
+
+        lead_score = LeadScore(
+            session_id=self._visitor_session_id,
+            score=score_100,
+            bucket=bucket,  # type: ignore[arg-type]
+            signals=signals,
+            last_updated=datetime.now(UTC),
+        )
+
+        await upsert_lead(
+            session=self._session,
+            tenant_id=UUID(self.tenant_id),
+            visitor_session_id=self._visitor_session_id,
+            lead_score=lead_score,
+        )
 
     @property
     def lead_score(self) -> float:

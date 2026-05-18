@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digidentity.io/schemas/dsl/scorecard.schema.json",
+  "title": "LeadScorecard",
+  "description": "Schema for lead scoring scorecards — BIBLE §6.5, §7.3",
+  "type": "object",
+  "required": ["version", "signals", "buckets"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Scorecard schema version (semver-lite, e.g. '1.0')"
+    },
+    "description": {
+      "type": "string"
+    },
+    "signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "weight", "max_score", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*[a-z0-9]$",
+            "description": "Snake-case signal identifier"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Default point value per occurrence"
+          },
+          "max_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Maximum points this signal can contribute"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "buckets": {
+      "type": "object",
+      "required": ["cold", "warm", "hot"],
+      "additionalProperties": false,
+      "properties": {
+        "cold": { "$ref": "#/$defs/bucket" },
+        "warm": { "$ref": "#/$defs/bucket" },
+        "hot":  { "$ref": "#/$defs/bucket" }
+      }
+    },
+    "persona_modifiers": {
+      "type": "object",
+      "description": "Flat point modifiers by top persona id",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": -100,
+        "maximum": 100
+      }
+    }
+  },
+  "$defs": {
+    "bucket": {
+      "type": "object",
+      "required": ["min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "min": { "type": "number", "minimum": 0, "maximum": 100 },
+        "max": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    }
+  }
+}
