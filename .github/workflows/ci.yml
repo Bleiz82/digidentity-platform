@@ -54,6 +54,22 @@ jobs:
         working-directory: apps/api
         run: uv run alembic upgrade head
 
+      - name: Verify schema
+        working-directory: apps/api
+        run: |
+          uv run python -c "
+          import os
+          from sqlalchemy import create_engine, text
+          url = os.environ['DATABASE_URL_SYNC']
+          engine = create_engine(url)
+          with engine.connect() as conn:
+              rows = conn.execute(text(\"SELECT tablename FROM pg_tables WHERE schemaname='public'\")).fetchall()
+              tables = [r[0] for r in rows]
+              assert 'tenants' in tables, f'tenants missing! tables={tables}'
+              assert 'entities' in tables, f'entities missing! tables={tables}'
+              print(f'OK schema verified: {len(tables)} tables -> {sorted(tables)}')
+          "
+
       - name: Run tests
         working-directory: apps/api
         run: |
