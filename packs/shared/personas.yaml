@@ -1,0 +1,57 @@
+version: "1.0"
+scope: shared
+description: "Cross-pack shared persona definitions — BIBLE §5, D-07 (phase3-kickoff §10)"
+
+personas:
+  - id: browsing
+    display_name_it: "Navigatore Generico"
+    display_name_en: "Browsing Visitor"
+    scope: shared
+    description: "No strong signal detected — default catch-all persona. Qualify progressively."
+    aliases: []
+    inference_hints:
+      - "no utm signals present"
+      - "direct traffic (no referrer)"
+      - "low engagement / short session"
+
+  - id: returning_visitor
+    display_name_it: "Visitatore di Ritorno"
+    display_name_en: "Returning Visitor"
+    scope: shared
+    description: "Visitor with a prior recorded session — higher baseline intent."
+    aliases: []
+    inference_hints:
+      - "is_returning=true"
+      - "session cookie or visitor_hash match"
+
+  - id: mobile_quick_visit
+    display_name_it: "Mobile Veloce"
+    display_name_en: "Mobile Quick Visit"
+    scope: shared
+    description: "Mobile device visitor with a brief, scan-type session."
+    aliases: []
+    inference_hints:
+      - "device_type=mobile"
+      - "session_duration < 60s"
+      - "single page view"
+
+  - id: desktop_research_mode
+    display_name_it: "Ricerca Desktop"
+    display_name_en: "Desktop Research Mode"
+    scope: shared
+    description: "Desktop user spending extended time consuming detailed content."
+    aliases: []
+    inference_hints:
+      - "device_type=desktop"
+      - "dwell_long signal (>3 min on detail page)"
+      - "multi_property_view signal"
+
+  - id: social_referral
+    display_name_it: "Referral Social"
+    display_name_en: "Social Referral"
+    scope: shared
+    description: "Visitor arriving via a social media platform — intent unknown, qualify."
+    aliases: []
+    inference_hints:
+      - "referrer_type=social"
+      - "utm_source in [facebook, instagram, twitter, linkedin, tiktok, pinterest]"

@@ -83,4 +83,29 @@ describe("inferPersona", () => {
       expect(s.score).toBeLessThanOrEqual(1.0);
     }
   });
+
+  it("returns only canonical persona ids — no legacy ids like luxury_investor or business_traveler", () => {
+    const legacyIds = new Set(["luxury_investor", "business_traveler"]);
+    const canonicalIds = new Set([
+      "international_investor",
+      "family_relocating",
+      "luxury_retiree",
+      "holiday_seeker",
+      "browsing",
+    ]);
+    const inputs = [
+      { utm: { utm_term: "invest roi" } },
+      { utm: { utm_term: "school famil" } },
+      { utm: { utm_term: "lifestyle wellness" } },
+      { utm: { utm_term: "holiday vacation" } },
+      { utm: {} },
+    ];
+    for (const utm of inputs) {
+      const scores = inferPersona({ ...base, ...utm });
+      for (const s of scores) {
+        expect(legacyIds.has(s.persona_id)).toBe(false);
+        expect(canonicalIds.has(s.persona_id)).toBe(true);
+      }
+    }
+  });
 });

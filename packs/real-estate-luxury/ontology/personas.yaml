@@ -1,0 +1,48 @@
+version: "1.0"
+pack_id: real-estate-luxury
+description: "Vertical personas for real-estate-luxury — extends packs/shared/personas.yaml. BIBLE §5, D-07."
+
+personas:
+  - id: international_investor
+    display_name_it: "Investitore Internazionale"
+    display_name_en: "International Investor"
+    scope: vertical
+    description: "High-net-worth buyer seeking investment returns from Italian luxury real estate. Focus on yield, capital appreciation, off-market access."
+    aliases:
+      - luxury_investor
+    inference_hints:
+      - "utm_term contains invest|roi|yield|rendimento|capital"
+      - "utm_medium=cpc with immobil|property terms"
+      - "utm_source=linkedin with invest|real.?estate terms"
+      - "utm_campaign contains invest|roi"
+
+  - id: luxury_retiree
+    display_name_it: "Pensionato di Lusso"
+    display_name_en: "Luxury Retiree"
+    scope: vertical
+    description: "Affluent retiree seeking lifestyle-oriented luxury residence. Focus on quality of life, wellness, concierge services."
+    aliases: []
+    inference_hints:
+      - "utm_term contains lifestyle|wellness|resort|pensionat|retiree|concierge"
+      - "utm_campaign contains lifestyle|wellness|luxury"
+      - "organic search with villa|luxury|esclusiv terms"
+
+  - id: family_relocating
+    display_name_it: "Famiglia in Trasferimento"
+    display_name_en: "Relocating Family"
+    scope: vertical
+    description: "Family seeking primary residence near international schools. Focus on safety, schools, space, logistics."
+    aliases: []
+    inference_hints:
+      - "utm_term contains school|scuola|famil|bambini|kids|relocat|move|sposta"
+      - "utm_campaign contains school|famil|relocat|trasferiment"
+
+  - id: holiday_seeker
+    display_name_it: "Cercatore di Vacanza"
+    display_name_en: "Holiday Seeker"
+    scope: vertical
+    description: "Visitor seeking short-term luxury rental or holiday home experience."
+    aliases: []
+    inference_hints:
+      - "utm_term contains holiday|vacation|vacanza|ferie|rent|affitto"
+      - "utm_campaign contains holiday|summer|estate|vacanza"

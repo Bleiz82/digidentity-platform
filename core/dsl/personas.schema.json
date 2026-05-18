@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digidentity.io/schemas/dsl/personas.schema.json",
+  "title": "PersonasFile",
+  "description": "Schema for shared and vertical persona definition files — BIBLE §5, D-07",
+  "type": "object",
+  "required": ["version", "personas"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Schema version (semver-lite, e.g. '1.0')"
+    },
+    "scope": {
+      "type": "string",
+      "enum": ["shared"],
+      "description": "Present only in packs/shared/personas.yaml"
+    },
+    "pack_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$",
+      "description": "Present only in packs/<vertical>/ontology/personas.yaml"
+    },
+    "description": {
+      "type": "string"
+    },
+    "personas": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/persona" }
+    }
+  },
+  "$defs": {
+    "persona": {
+      "type": "object",
+      "required": ["id", "display_name_it", "display_name_en", "scope", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*[a-z0-9]$",
+          "description": "Canonical snake_case identifier — unique within the merged pack persona set"
+        },
+        "display_name_it": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_name_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["shared", "vertical"],
+          "description": "shared = cross-pack; vertical = pack-specific"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*[a-z0-9]$"
+          },
+          "description": "Legacy or alternative IDs that resolve to this persona's canonical id"
+        },
+        "inference_hints": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Human-readable hints for Sense engine rule authors"
+        }
+      }
+    }
+  }
+}
