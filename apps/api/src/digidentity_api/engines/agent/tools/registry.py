@@ -4,6 +4,9 @@ All execution is pure in-memory for Phase 2; no shell, no filesystem writes.
 If session + visitor_session_id are provided, lead_update_score also persists
 the accumulated score via qualify.persistence.upsert_lead (back-compat: in-memory
 only when session is not available).
+
+kg_search now calls EmbeddingRouter to embed the query (ADR-007 P3-03).
+Results remain simulated until a live pgvector DB is available (P3-07).
 """
 
 from __future__ import annotations
@@ -13,6 +16,7 @@ from typing import Any
 from uuid import UUID
 
 from digidentity_api.engines.agent.tools.schemas import ALL_TOOLS
+from digidentity_api.engines.embeddings import EmbeddingRouter, get_router
 
 
 @dataclass
@@ -31,11 +35,13 @@ class ToolRegistry:
         tenant_id: str | UUID,
         session: Any = None,
         visitor_session_id: UUID | None = None,
+        embedding_router: EmbeddingRouter | None = None,
     ) -> None:
         self.tenant_id = str(tenant_id)
         self._session = session
         self._visitor_session_id = visitor_session_id
         self._lead_state: LeadScoreState = LeadScoreState()
+        self._embedding_router: EmbeddingRouter = embedding_router or get_router()
 
     # ── Schema accessor ───────────────────────────────────────────────────────
 
@@ -45,8 +51,15 @@ class ToolRegistry:
 
     # ── Tool implementations ──────────────────────────────────────────────────
 
-    def kg_search(self, query: str, top_k: int = 5) -> dict[str, Any]:
-        """Stub KG search — returns simulated entities for Phase 2."""
+    async def kg_search(self, query: str, top_k: int = 5) -> dict[str, Any]:
+        """Embed query via EmbeddingRouter then return simulated entity results.
+
+        The embedding call is real (OpenAI) or mocked depending on config (ADR-007).
+        Full pgvector retrieval will be wired in P3-07 when a live KG is available.
+        """
+        query_vectors = await self._embedding_router.embed([query])
+        query_vector = query_vectors[0]  # keep for future pgvector lookup
+        _ = query_vector  # not yet used for retrieval
         results = [
             {
                 "entity_id": f"ent-{i:04d}",
@@ -59,7 +72,12 @@ class ToolRegistry:
             }
             for i in range(min(top_k, 5))
         ]
-        return {"query": query, "results": results, "tenant_id": self.tenant_id}
+        return {
+            "query": query,
+            "results": results,
+            "tenant_id": self.tenant_id,
+            "embedding_dims": len(query_vector),
+        }
 
     def render_highlight(self, entity_id: str, reason: str) -> dict[str, Any]:
         """Emit a highlight RenderingDirective (returned as tool result)."""
@@ -131,11 +149,11 @@ class ToolRegistry:
 
     # ── Dispatch ──────────────────────────────────────────────────────────────
 
-    def execute(self, tool_name: str, tool_input: dict[str, Any]) -> dict[str, Any]:
+    async def execute(self, tool_name: str, tool_input: dict[str, Any]) -> dict[str, Any]:
         """Dispatch tool_name with tool_input dict. Raises ValueError if unknown."""
         match tool_name:
             case "kg_search":
-                return self.kg_search(
+                return await self.kg_search(
                     query=tool_input["query"],
                     top_k=tool_input.get("top_k", 5),
                 )

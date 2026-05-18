@@ -41,9 +41,10 @@ def test_tool_schemas_are_anthropic_compatible() -> None:
 
 # ── 2. kg_search returns simulated results ───────────────────────────────────
 
-def test_kg_search_returns_results() -> None:
+@pytest.mark.asyncio
+async def test_kg_search_returns_results() -> None:
     registry = ToolRegistry(tenant_id=TENANT_ID)
-    result = registry.kg_search(query="villa fronte mare", top_k=3)
+    result = await registry.kg_search(query="villa fronte mare", top_k=3)
     assert "results" in result
     assert len(result["results"]) == 3
     assert result["query"] == "villa fronte mare"

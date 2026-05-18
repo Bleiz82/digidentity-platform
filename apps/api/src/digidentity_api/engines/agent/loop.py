@@ -127,7 +127,7 @@ class AgentLoop:
                 tool_results: list[dict[str, Any]] = []
                 for tu in pending_tool_uses:
                     try:
-                        result = registry.execute(tu["name"], tu["input"])
+                        result = await registry.execute(tu["name"], tu["input"])
                     except Exception as exc:
                         result = {"error": str(exc)}
 
