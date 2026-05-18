@@ -56,7 +56,18 @@ jobs:
 
       - name: Run tests
         working-directory: apps/api
-        run: uv run pytest tests/ -q
+        run: |
+          uv run pytest tests/ -v --tb=long --maxfail=20 2>&1 | tee pytest-output.txt
+          echo "EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+          exit ${PIPESTATUS[0]}
+
+      - name: Upload pytest output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-output-backend
+          path: apps/api/pytest-output.txt
+          retention-days: 7
 
   # ── 2. Frontend tests + build ──────────────────────────────────────────────
   frontend-test:
