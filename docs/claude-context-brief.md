@@ -1,160 +1,151 @@
-\# DigIdentity Platform — Context Brief per Claude
+# DigIdentity Living Site — Context Brief per Claude
 
+## REGOLA #0 — LETTURA SOURCE-OF-TRUTH OBBLIGATORIA
 
+All'inizio di ogni nuova sessione Claude Code o Claude chat importante, PRIMA di
+proporre qualsiasi azione, leggere nell'ordine:
 
-\## Chi sono
+1. `BIBLE-v3.md` (integralmente o sezioni rilevanti)
+2. `docs/phase2-realignment.md`
+3. `docs/phase1-followups.md`
+4. Ultimo commit con `git log --oneline -5`
 
-Stefano Corda, 42, titolare web agency DigIdentity Agency, inventore della 
+Poi riassumere in 5 righe cosa si è capito e ATTENDERE conferma umana prima di
+agire. Mai ricostruire il contesto a memoria.
 
-DigIdentity Card, autore di manuali su digital marketing locale. Cantante 
+---
 
-dei Revolver Sardinia. Esperto digital marketing, NON sviluppatore senior 
+## Chi sono
 
-ma con buona comprensione tecnica e governance progettuale rigorosa.
+Stefano Corda, 42, titolare web agency DigIdentity Agency, autore di manuali su
+digital marketing locale. Cantante dei Revolver Sardinia. Esperto digital
+marketing, NON sviluppatore senior ma con buona comprensione tecnica e governance
+progettuale rigorosa.
 
+**Nota di scope:** "DigIdentity Card" è un progetto SEPARATO di Stefano, NON
+parte di questo repository. Questo repository implementa esclusivamente il
+prodotto Living Site (BIBLE-v3). Non confondere i due progetti.
 
+---
 
-\## Il progetto
+## Il progetto
 
-DigIdentity Platform: backend multi-tenant SaaS per knowledge graph + 
+**DigIdentity Living Site** — piattaforma SaaS multi-tenant per la creazione di
+"siti web abitabili". Il prodotto NON è un sito con chatbot aggiunto: è un
+agente AI che si manifesta come sito, riconosce il visitatore (Sense), trasforma
+il layout per ciascuno (Morph), dialoga (Converse), accompagna in spazi immersivi
+(Inhabit), qualifica i prospect (Qualify) e li consegna al sales (Hand-off).
 
-conversational AI verticali (primo pack: real-estate-luxury). 
+Target verticali: immobiliare luxury, cliniche dentali e estetiche premium,
+hospitality di nicchia, atelier di lusso, studi professionali specialistici.
+Pack pilota: `real-estate-luxury`.
 
 Repo: github.com/Bleiz82/digidentity-platform (privato).
 
+---
 
+## Otto stati dell'esperienza visitatore (BIBLE-v3 §2)
 
-\## Stato attuale (al 2026-05-15)
+| Stato | Cosa fa |
+|-------|---------|
+| **Sense** | Il sito riconosce il visitatore prima che parli (UTM, device, geo, fingerprint) |
+| **Morph** | Il sito si trasforma in base alla persona inferita (stesso URL, layout diverso) |
+| **Converse** | Il sito dialoga — agente multi-turno con tool calling verso il KG e verso il DOM |
+| **Inhabit** | Il visitatore abita uno spazio immersivo (tour 3D, 360°) sincronizzato con l'agente |
+| **Qualify** | Il sito qualifica il prospect (lead scoring incrementale, soglie cold/warm/hot) |
+| **Hand-off** | Il sito consegna il lead hot al sales con briefing completo |
+| **Remember** | Il sito ricorda il visitatore di ritorno e riprende da dove si era fermato |
+| **Learn** | Il sistema impara da ogni interazione e migliora le regole morph e i prompt |
 
-\- \*\*Phase 1 COMPLETATA\*\* — commit `2caab8d` su `main`, tag `phase-1-complete`
+---
 
-\- 24 commit, 106 file, \~10.300 righe
+## Architettura: i sette engine (BIBLE-v3 §4)
 
-\- 58 test verdi, 4 eval set PASS, 0 issue RLS
+| # | Engine | Ruolo |
+|---|--------|-------|
+| 1 | Knowledge Graph Engine | Persistenza e retrieval multi-tenant (entità, embeddings, relazioni, memoria) |
+| 2 | **Adaptive Renderer** ← core IP | Decision Engine: morph rules statiche + directives dinamiche dall'agente |
+| 3 | Conversational Renderer | Trasporto stream: SSE per testo, WebRTC/LiveKit per voce |
+| 4 | Agent Orchestrator | Loop agente: ragionamento, tool calling, scoring incrementale, fallback modelli |
+| 5 | Spatial Experience Engine | Tour 3D, gallerie 360°, modelli volumetrici sincronizzati con l'agente |
+| 6 | Static Manifestation Engine | Pre-render varianti morph per SEO + `/llm.txt` per GEO |
+| 7 | Learning Engine | Pipeline notturna: metriche, pattern, suggerimenti prompt e morph rules |
 
+**Inversione fondante (BIBLE-v3 §3):** il sito non è l'interfaccia dell'agente —
+il sito è uno strumento che l'agente usa. L'agente chiama tool (`morph_section`,
+`highlight_property`, `inject_component`, `trigger_handoff`) che modificano il
+DOM in tempo reale via SSE.
 
+---
 
-\## Stack tecnologico
+## Stack tecnologico
 
-\- \*\*Backend\*\*: FastAPI + Python 3.13 (uv), SQLAlchemy 2.x async (Mapped + mapped\_column)
+- **Backend**: FastAPI + Python 3.13 (uv), SQLAlchemy 2.x async (Mapped + mapped_column)
+- **DB**: PostgreSQL 16 + pgvector 0.8.2 (halfvec(3072) + HNSW)
+- **Frontend**: Next.js 15 (App Router) + React 19 RSC + TypeScript + pnpm
+- **Infra**: Docker Compose locale, testcontainers per test, Celery + Redis
+- **LLM**: Anthropic Claude Sonnet 4.6/4.7 primario, fallback GPT-5 via router
 
-\- \*\*DB\*\*: PostgreSQL 16 + pgvector 0.8.2 (halfvec(3072) + HNSW)
+---
 
-\- \*\*Frontend\*\* (scaffold only, no logic): Next.js 14 (App Router) + TypeScript + pnpm
+## ADR fondamentali
 
-\- \*\*Infra\*\*: Docker Compose locale, testcontainers per test, Celery + Redis (mock)
+- **ADR-001**: Stack canonico (FastAPI + Postgres + Next.js)
+- **ADR-002**: Trasporto multimodale (SSE per web, voice deferred)
+- **ADR-003**: Tenant isolation via RLS FORCE + `with_tenant()` async context manager
+- **ADR-004**: LLM router con circuit breaker per-model, retry 1x su 503/529
+- **ADR-005**: Multi-embedding (content/lifestyle/features 3072-dim halfvec, pesi 0.45/0.35/0.20)
 
-\- \*\*LLM\*\*: mock provider in Phase 1, Anthropic API prevista in Phase 2
+---
 
+## Stato attuale (al 2026-05-18)
 
+- **Phase 1 COMPLETATA** — commit `2caab8d`, tag `phase-1-complete`
+- **Phase 2 in corso** — 9 commit dopo phase-1-complete
+- **Ultimo commit**: `6017824` — docs realignment (phase2-realignment.md)
+- **Prossimo step**: STEP 8 — prerequisiti BIBLE Phase 1 ancora mancanti
+  (dettaglio in `docs/phase2-realignment.md §6`)
 
-\## ADR fondamentali (sempre da rispettare)
+---
 
-\- \*\*ADR-001\*\*: Stack canonico (FastAPI + Postgres + Next.js)
+## Decisioni architetturali consolidate
 
-\- \*\*ADR-002\*\*: Trasporto multimodale (SSE per web, voice deferred)
+- UUID v7 via `uuid-utils` (Python), non extension Postgres
+- SQLAlchemy: classic `mapped_column`, NO `MappedAsDataclass`
+- Testcontainers (image `pgvector/pgvector:pg16`), session-scoped
+- Table naming: plurale (`tenants`, `sessions`, `entities`, `usage_logs`)
+- Stub embeddings deterministici (hash + signal boost dim 0-49/50-99/100-149)
+- Pack registry caricato da disco al boot (no DB in Phase 1)
+- Embedding versioning via VARCHAR `embedding_version` (no JSONB)
+- `vector(3072)` → `halfvec(3072)` (pgvector HNSW limit 2000 dim, RAM dimezzata)
 
-\- \*\*ADR-003\*\*: Tenant isolation via RLS FORCE + `with\_tenant()` async context manager
+---
 
-\- \*\*ADR-004\*\*: LLM router con circuit breaker per-model, retry 1x su 503/529
+## Pattern di lavoro che FUNZIONA
 
-\- \*\*ADR-005\*\*: Multi-embedding (content/lifestyle/features 3072-dim halfvec, pesi 0.45/0.35/0.20)
+- Atomic commits con tag `[step-N]` nel messaggio
+- Sub-agent: `engine-implementer` (sonnet) per codice, MAI per decisioni architetturali
+- Pausa su ogni decisione architetturale non coperta da ADR
+- Pre-commit: pytest verde + eval PASS + RLS check
+- Strategia "calibration first": si misurano i numeri reali, poi si tarano le
+  soglie a baseline × 0.85
+- Refuse del "fake baseline" (es. anchor embedding che inflaziona NDCG)
 
+---
 
+## Come voglio interagire
 
-\## Amendment ADR-005 da formalizzare in ADR-006 (Phase 2)
+- Risposte concrete, no fluff. Tono italiano, rock-friendly. Emoji solo se le uso io.
+- Decisioni architetturali: sempre pausa + 3 opzioni + raccomandazione motivata
+- Pattern: lavoro autonomo dell'engine-implementer con checkpoint, NON micro-management
+- Se Claude Code propone qualcosa fuori scope, blocca e chiedi a me
 
-1\. `vector(3072)` → `halfvec(3072)` (pgvector HNSW limit 2000 dim)
+---
 
-2\. RAM 25-35 GB/tenant → 13-18 GB/tenant (halfvec dimezza)
-
-3\. Shared HNSW con RLS confermato (non per-tenant)
-
-
-
-\## Decisioni architetturali consolidate
-
-\- UUID v7 via `uuid-utils` (Python), non extension Postgres
-
-\- SQLAlchemy: classic `mapped\_column`, NO `MappedAsDataclass`
-
-\- Testcontainers (image `pgvector/pgvector:pg16`), session-scoped
-
-\- Table naming: plurale (`tenants`, `sessions`, `entities`, `usage\_logs`)
-
-\- Stub embeddings deterministici (hash + signal boost dim 0-49/50-99/100-149)
-
-\- Pack registry caricato da disco al boot (no DB in Phase 1)
-
-\- Embedding versioning via VARCHAR `embedding\_version` (no JSONB)
-
-
-
-\## Pattern di lavoro che FUNZIONA (mantenere in Phase 2)
-
-\- Atomic commits con tag `\[step-N]` nel messaggio
-
-\- Sub-agent: `engine-implementer` (sonnet) per codice, MAI per decisioni
-
-\- Pausa su ogni decisione architetturale non coperta da ADR
-
-\- Pre-commit: pytest verde + eval PASS + RLS check
-
-\- Strategia "calibration first": prima si misurano i numeri reali, poi si tarano le soglie a baseline × 0.85
-
-\- Refuse del "fake baseline" (es. anchor embedding che inflaziona NDCG)
-
-
-
-\## File chiave da leggere se servono dettagli
-
-\- `BIBLE-v3.md` — vision di progetto
-
-\- `docs/phase1-followups.md` — backlog Phase 2 prioritizzato
-
-\- `docs/adr/00X-\*.md` — ADR specifici
-
-\- `apps/api/src/digidentity\_api/` — codice backend
-
-
-
-\## Cosa NON è in Phase 1 (rinviato a Phase 2+)
-
-\- Frontend Next.js logico (solo scaffold)
-
-\- Integrazione LLM reale (solo mock)
-
-\- Conversations/messages table
-
-\- Long-polling fallback per SSE
-
-\- LiveKit voice channel
-
-\- GitHub Actions attive (workflow scritto ma dormiente)
-
-\- Natural-language retrieval eval (stub embeddings non supportano)
-
-
-
-\## Stato Phase 2
-
-\- Nessuno step ancora avviato
-
-\- Primo candidato in discussione: frontend Next.js client + SSE (step 5.5)
-
-\- Alternative: real LLM integration | natural-language eval con sentence-transformers
-
-
-
-\## Come voglio interagire
-
-\- Risposte concrete, no fluff. Tono italiano, rock-friendly. Emoji solo se le uso io.
-
-\- Decisioni architetturali: sempre pausa + 3 opzioni + raccomandazione motivata
-
-\- Pattern: lavoro autonomo dell'engine-implementer con checkpoint, NON micro-management
-
-\- Se Claude Code propone qualcosa fuori scope, blocca e chiedi a me
-
-
-
+## File chiave da leggere se servono dettagli
+
+- `BIBLE-v3.md` — source of truth assoluta
+- `docs/phase2-realignment.md` — open questions + prossimi step
+- `docs/phase1-followups.md` — backlog Phase 2 prioritizzato
+- `docs/adr/00X-*.md` — ADR specifici
+- `apps/api/src/digidentity_api/` — codice backend
