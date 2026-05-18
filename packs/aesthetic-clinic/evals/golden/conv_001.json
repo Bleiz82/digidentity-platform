@@ -1,0 +1,34 @@
+{
+  "id": "conv_001",
+  "scenario": "anti_aging_filler_natural_result",
+  "persona_expected": "anti_aging",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho 49 anni e vorrei fare qualcosa per le rughe del viso, ma ho paura di sembrare 'rifatta'. Esiste un approccio graduale e naturale con il filler?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "reassures_on_naturalness",
+        "explains_gradual_approach",
+        "offers_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 35,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

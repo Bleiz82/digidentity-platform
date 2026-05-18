@@ -1,0 +1,33 @@
+{
+  "id": "conv_005",
+  "scenario": "body_contouring_radiofrequency_thighs",
+  "persona_expected": "body_contouring",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho la cellulite sulle cosce e vorrei rassodare la pelle. Ho letto della radiofrequenza. Quante sedute servono e quanto dura il risultato?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_radiofrequency",
+        "addresses_session_count",
+        "mentions_maintenance"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 30,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

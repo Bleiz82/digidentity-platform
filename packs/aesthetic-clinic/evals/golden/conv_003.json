@@ -1,0 +1,34 @@
+{
+  "id": "conv_003",
+  "scenario": "anti_aging_biorevitalization_skinquality",
+  "persona_expected": "anti_aging",
+  "turns": [
+    {
+      "role": "user",
+      "content": "La mia pelle è molto secca e spenta, soprattutto d'inverno. Ho 44 anni. Sto valutando la biorivitalizzazione. È adatta a me?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_biorevitalization",
+        "mentions_skin_quality",
+        "recommends_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 30,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

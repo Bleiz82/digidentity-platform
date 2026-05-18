@@ -1,0 +1,34 @@
+{
+  "id": "conv_008",
+  "scenario": "post_pregnancy_mommy_makeover_steps",
+  "persona_expected": "post_pregnancy",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Mia sorella ha fatto un percorso di rimodellamento dopo la gravidanza e mi ha consigliato questa clinica. Sto valutando addome e trattamento per il seno. Come funziona il percorso?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "welcomes_referral",
+        "explains_multi_step_journey",
+        "proposes_initial_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 35,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

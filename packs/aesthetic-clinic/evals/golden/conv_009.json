@@ -1,0 +1,34 @@
+{
+  "id": "conv_009",
+  "scenario": "special_event_wedding_face_glow",
+  "persona_expected": "special_event",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Mi sposo tra 9 settimane. Voglio la pelle del viso luminosa e riposata per le foto. Cosa mi consigliate di fare in questi tempi?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "acknowledges_timeline",
+        "explains_realistic_options",
+        "urgently_proposes_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

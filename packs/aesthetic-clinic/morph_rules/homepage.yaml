@@ -1,0 +1,174 @@
+version: 1
+target_page: homepage
+description: "Morph rules homepage aesthetic-clinic — 4 personas + return_visitor + render_default fallback"
+
+rules:
+  - id: anti-aging-hero
+    priority: 40
+    description: "Anti-age: hero portfolio before/after, naturalezza, discretezza"
+    when:
+      signal: persona_score.anti_aging
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: anti_aging_hero_v1
+      - directive: show
+        target: before_after_gallery
+      - directive: hide
+        target: body_contouring_promo
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: RejuvenationTeaser
+          props:
+            headline: "Risultati naturali, tempo che rallenta — senza bisturi"
+            cta_text: "Scopri i trattamenti anti-age"
+          position: prepend
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_anti_aging
+          payload:
+            rule_id: anti-aging-hero
+
+  - id: body-contouring-hero
+    priority: 30
+    description: "Body contouring: hero rimodellamento, no chirurgia, risultati localizzati"
+    when:
+      signal: persona_score.body_contouring
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: body_contouring_hero_v1
+      - directive: show
+        target: body_contouring_promo
+      - directive: hide
+        target: facial_rejuvenation_block
+      - directive: rewrite_copy
+        target: hero_headline
+        params:
+          variant: body_contouring_headline_v1
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: BodyContouringHighlight
+          props:
+            headline: "Ridefinisci la tua silhouette — senza intervento, senza recupero"
+            cta_text: "Esplora i trattamenti corpo"
+          position: prepend
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_body_contouring
+          payload:
+            rule_id: body-contouring-hero
+
+  - id: post-pregnancy-hero
+    priority: 50
+    description: "Post-gravidanza: hero mommy makeover, sicurezza, personalizzazione"
+    when:
+      signal: persona_score.post_pregnancy
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: post_pregnancy_hero_v1
+      - directive: show
+        target: post_pregnancy_journey_block
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: PostPregnancyWelcome
+          props:
+            headline: "Il tuo corpo merita cura — un percorso pensato per te"
+            cta_text: "Scopri il percorso post-gravidanza"
+          position: prepend
+      - directive: trigger_agent
+        target: _self
+        params:
+          persona_aware: true
+          intent: post_pregnancy_welcome
+          delay_ms: 5000
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_post_pregnancy
+          payload:
+            rule_id: post-pregnancy-hero
+
+  - id: special-event-urgency
+    priority: 60
+    description: "Evento speciale: hero urgenza temporale, trattamenti rapidi, countdown"
+    when:
+      signal: persona_score.special_event
+      gte: 0.5
+    do:
+      - directive: morph_section
+        target: hero_section
+        params:
+          template: special_event_hero_v1
+      - directive: show
+        target: event_countdown_widget
+      - directive: show
+        target: express_treatment_block
+      - directive: inject
+        target: above_fold_slot
+        params:
+          component: EventReadinessBanner
+          props:
+            headline: "Il tuo grande giorno si avvicina — inizia subito il percorso"
+            cta_text: "Prenota la consulenza urgente"
+          position: prepend
+      - directive: trigger_agent
+        target: _self
+        params:
+          persona_aware: true
+          intent: event_urgency_consultation
+          delay_ms: 3000
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_special_event
+          payload:
+            rule_id: special-event-urgency
+
+  - id: return-visitor-welcome
+    priority: 10
+    description: "Visitatore di ritorno: personalizzazione contestuale, ripresa percorso"
+    when:
+      signal: return_visitor
+      gte: 1
+    do:
+      - directive: inject
+        target: header_slot
+        params:
+          component: ReturnVisitorGreeting
+          props:
+            headline: "Bentornata — riprendi il tuo percorso di bellezza"
+            cta_text: "Visualizza la tua consulenza"
+          position: prepend
+      - directive: trigger_agent
+        target: _self
+        params:
+          persona_aware: true
+          intent: return_visitor_followup
+          delay_ms: 2000
+      - directive: track
+        target: _self
+        params:
+          event_name: morph_applied_return_visitor
+          payload:
+            rule_id: return-visitor-welcome
+
+fallback:
+  - directive: render_default
+    target: hero_section
+  - directive: track
+    target: _self
+    params:
+      event_name: morph_no_rule_matched_homepage

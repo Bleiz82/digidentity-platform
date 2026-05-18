@@ -1,0 +1,33 @@
+{
+  "id": "conv_006",
+  "scenario": "body_contouring_multi_area_protocol",
+  "persona_expected": "body_contouring",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Vorrei trattare contemporaneamente fianchi e interno coscia. È possibile fare più aree in una sola sessione? Quanto costerebbe indicativamente?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_multi_area_possibility",
+        "mentions_pricing_consultation",
+        "offers_appointment"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

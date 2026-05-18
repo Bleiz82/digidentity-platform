@@ -1,0 +1,34 @@
+{
+  "id": "conv_004",
+  "scenario": "body_contouring_cryolipolysis_abdomen",
+  "persona_expected": "body_contouring",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Faccio sport tre volte a settimana ma il grasso sull'addome non va via. Ho sentito che la criolipolisi elimina le cellule adipose. È davvero permanente?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_cryolipolysis_mechanism",
+        "addresses_permanence",
+        "sets_realistic_expectations"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 35,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

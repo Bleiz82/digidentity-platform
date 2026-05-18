@@ -219,6 +219,56 @@ jobs:
         working-directory: apps/api
         run: uv run pytest tests/test_dental_luxury_pack.py -q
 
+  eval-aesthetic-clinic:
+    name: Eval — aesthetic-clinic
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: digidentity_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL_SYNC: postgresql://postgres:postgres@localhost:5432/digidentity_test
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/digidentity_test
+      EMBEDDING_PROVIDER: mock
+      ANTHROPIC_API_KEY: ""
+      OPENAI_API_KEY: ""
+      TESTCONTAINERS_RYUK_DISABLED: "true"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "apps/api/uv.lock"
+
+      - name: Install dependencies
+        working-directory: apps/api
+        run: uv sync --group dev
+
+      - name: Pre-pull testcontainers image
+        run: docker pull pgvector/pgvector:pg16
+
+      - name: Run Alembic migrations
+        working-directory: apps/api
+        run: uv run alembic upgrade head
+
+      - name: Run aesthetic-clinic pack tests
+        working-directory: apps/api
+        run: uv run pytest tests/test_aesthetic_clinic_pack.py -q
+
   # ── 5. ADR coverage check ─────────────────────────────────────────────────
   adr-coverage:
     name: ADR Coverage

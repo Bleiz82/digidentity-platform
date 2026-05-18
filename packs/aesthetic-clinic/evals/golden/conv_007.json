@@ -1,0 +1,32 @@
+{
+  "id": "conv_007",
+  "scenario": "post_pregnancy_abdomen_restore",
+  "persona_expected": "post_pregnancy",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho finito di allattare da due mesi. Ho la pancia ancora gonfia e la pelle un po' flaccida. Cosa posso fare senza operazione?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "acknowledges_situation_warmly",
+        "explains_non_surgical_options",
+        "recommends_personalised_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 30,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

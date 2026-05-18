@@ -1,0 +1,60 @@
+# DigIdentity Pack — aesthetic-clinic v0.1
+# BIBLE §5: fat core / lean packs
+
+id: aesthetic-clinic
+version: "0.1.0"
+vertical: aesthetic-clinic
+language: it
+
+# Search weight overrides (ADR-005 Area C — 3 query types)
+search:
+  weights:
+    default:
+      content: 0.45
+      lifestyle: 0.30
+      features: 0.25
+    lifestyle_search:
+      content: 0.15
+      lifestyle: 0.70
+      features: 0.15
+    feature_search:
+      content: 0.20
+      lifestyle: 0.10
+      features: 0.70
+    general:
+      content: 0.45
+      lifestyle: 0.30
+      features: 0.25
+
+# Personas (referenced by morph rules)
+personas:
+  - id: anti_aging
+    label: "Ringiovanimento e prevenzione"
+    description: >
+      Visitatore over 40 interessato a trattamenti anti-age non chirurgici:
+      filler, botulino, lifting con fili, biorivitalizzazione. Orientato a
+      risultati naturali e progressivi, non a trasformazioni radicali.
+      Sensibile a discrezione, esperienza medica e portfolio prima/dopo.
+  - id: body_contouring
+    label: "Rimodellamento corporeo"
+    description: >
+      Visitatore interessato a trattamenti corporei non invasivi: criolipolisi,
+      radiofrequenza, trattamenti dimagranti localizzati, lifting corpo.
+      Motivato da un obiettivo estetico specifico (pancia, fianchi, braccia).
+      Sensibile a protocolli senza chirurgia e tempi di recupero nulli.
+  - id: post_pregnancy
+    label: "Post-gravidanza (mommy makeover)"
+    description: >
+      Visitatrice che ha completato l'allattamento e cerca trattamenti per
+      recuperare la forma corporea post-gravidanza: addominoplastica non
+      chirurgica, trattamenti seno, rassodamento addome. Sensibile a
+      sicurezza, naturalezza e percorsi personalizzati in più step.
+  - id: special_event
+    label: "Preparazione evento speciale"
+    description: >
+      Visitatore con scadenza temporale definita (matrimonio, cerimonia,
+      shooting fotografico). Cerca trattamenti rapidi con risultati visibili
+      in 4-8 settimane. Altamente motivato, urgenza genuina.
+
+# Morph rules location
+morph_rules_path: morph_rules/

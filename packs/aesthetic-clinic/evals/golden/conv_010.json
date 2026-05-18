@@ -1,0 +1,35 @@
+{
+  "id": "conv_010",
+  "scenario": "special_event_ceremony_body_express",
+  "persona_expected": "special_event",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho una cerimonia importante tra 6 settimane. Vorrei trattare la pancia per stare bene nel vestito. Avete qualcosa di rapido che funziona in questi tempi?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "validates_timeline_urgency",
+        "explains_express_protocol",
+        "sets_realistic_expectations",
+        "books_priority_consultation"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 45,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

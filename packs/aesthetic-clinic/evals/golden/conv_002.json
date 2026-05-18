@@ -1,0 +1,33 @@
+{
+  "id": "conv_002",
+  "scenario": "anti_aging_thread_lift_inquiry",
+  "persona_expected": "anti_aging",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho sentito parlare del lifting con fili. Ho 52 anni e ho un po' di cedimento agli zigomi. Quanto dura il risultato e c'è recupero?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explains_thread_lift",
+        "addresses_recovery",
+        "mentions_duration"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 30,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

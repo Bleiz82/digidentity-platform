@@ -1,0 +1,54 @@
+version: "1.0"
+pack_id: aesthetic-clinic
+description: "Vertical personas for aesthetic-clinic — extends packs/shared/personas.yaml. BIBLE §5."
+
+personas:
+  - id: anti_aging
+    display_name_it: "Ringiovanimento Anti-Age"
+    display_name_en: "Anti-Aging Seeker"
+    scope: vertical
+    description: "Visitor over 40 seeking non-surgical rejuvenation: fillers, botulinum, thread lifting, biostimulation. Focused on natural, progressive results."
+    aliases:
+      - rejuvenation_seeker
+    inference_hints:
+      - "utm_term contains filler|botox|botulino|lifting|ringiovanimento|anti.age|anti.aging|rughe|wrinkles|bioriv"
+      - "utm_campaign contains anti.age|rejuvenation|ringiovanimento|youth"
+      - "organic search with filler.viso|botox|rughe.fronte|lifting.viso terms"
+      - "age_signal: visitor_age_estimated > 38 from behavioral patterns"
+
+  - id: body_contouring
+    display_name_it: "Rimodellamento Corporeo"
+    display_name_en: "Body Contouring Seeker"
+    scope: vertical
+    description: "Visitor seeking non-invasive body treatments: cryolipolysis, radiofrequency, localized slimming, body lifting. Motivated by specific body area goals."
+    aliases:
+      - slimming_seeker
+    inference_hints:
+      - "utm_term contains criolipolisi|radiofrequenza|dimagrire|pancia|fianchi|rimodellamento|body|contouring"
+      - "utm_campaign contains body|contouring|slimming|rassodamento|forma"
+      - "organic search with eliminare.grasso|criolipolisi|pancia.piatta terms"
+
+  - id: post_pregnancy
+    display_name_it: "Post-Gravidanza"
+    display_name_en: "Post-Pregnancy Restore"
+    scope: vertical
+    description: "Visitor seeking post-pregnancy aesthetic restoration: non-surgical abdominoplasty, breast treatments, abdominal tightening. Values safety and personalised multi-step protocols."
+    aliases:
+      - mommy_makeover
+    inference_hints:
+      - "utm_term contains gravidanza|post.parto|mamma|addome|seno|allattamento|mommy|makeover|pregnancy"
+      - "utm_campaign contains post.pregnancy|mommy|mamma.corpo|restore"
+      - "organic search with pancia.post.parto|corpo.dopo.gravidanza terms"
+
+  - id: special_event
+    display_name_it: "Evento Speciale"
+    display_name_en: "Special Event Seeker"
+    scope: vertical
+    description: "Visitor with a defined deadline (wedding, ceremony, photo shoot) seeking fast-visible treatments in 4-8 weeks. High motivation, genuine urgency."
+    aliases:
+      - bridal
+    inference_hints:
+      - "utm_term contains matrimonio|wedding|sposa|bride|cerimonia|evento|shooting|feste"
+      - "utm_campaign contains bridal|wedding|evento.speciale|sposa"
+      - "organic search with trattamenti.prima.matrimonio|sbiancamento.sposa|trucco.semipermanente terms"
+      - "event_date signal present in conversation"
