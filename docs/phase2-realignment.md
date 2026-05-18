@@ -1,3 +1,5 @@
+> **✅ COMPLETED 2026-05-18 — see [docs/phase2-complete.md](phase2-complete.md)**
+
 # Phase 2 — Riallineamento alla BIBLE-v3
 
 **Data**: 2026-05-15
