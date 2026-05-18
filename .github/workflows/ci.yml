@@ -57,9 +57,8 @@ jobs:
       - name: Run tests
         working-directory: apps/api
         run: |
+          set -o pipefail
           uv run pytest tests/ -v --tb=long --maxfail=20 2>&1 | tee pytest-output.txt
-          echo "EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
-          exit ${PIPESTATUS[0]}
 
       - name: Upload pytest output
         if: always()
