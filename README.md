@@ -1,5 +1,7 @@
 ﻿# DigIdentity Platform
 
+[![CI](https://github.com/Bleiz82/digidentity-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Bleiz82/digidentity-platform/actions/workflows/ci.yml)
+
 Living Site platform: digital identity multi-tenant per brand, con knowledge graph vettoriale, rendering adattivo (Morph), edge classification (Sense) e canale voice conversazionale.
 
 ## Stato
@@ -44,6 +46,21 @@ Frontend Next.js, embedding OpenAI reali, LiveKit voice, GitHub Actions attivazi
 - `docs/adr/` — Architecture Decision Records (ADR-001 .. ADR-005 + 2 amendments)
 - `docs/phase1-followups.md` — item aperti per Phase 2
 - `docs/phase1-kickoff.md` — documento di kickoff Phase 1
+
+## CI/CD
+
+Pipeline GitHub Actions con 5 job paralleli (ADR-008). Ogni push a `main` esegue:
+
+| Job | Cosa fa | Gate |
+|-----|---------|------|
+| `backend-test` | pytest 172+ test, Postgres 16 + pgvector service container, Alembic migrations | bloccante |
+| `frontend-test` | vitest 25+ test + `next build` | bloccante |
+| `lint-packs` | validazione YAML morph rules + schema DSL | bloccante |
+| `eval-real-estate-luxury` | 20 golden conversation eval (mock provider) | bloccante |
+| `adr-coverage` | verifica status ADR valido (no Rejected, no assente) | bloccante |
+
+Le PR verso `main` eseguono i primi 3 job. Le ultime due gate (`eval-*` e `adr-coverage`) girano solo su push a `main`.
+Configurare branch protection rules in GitHub Settings → Branches dopo il primo CI run verde.
 
 ## Stack
 

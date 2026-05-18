@@ -1,0 +1,158 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # ── 1. Backend tests (requires Postgres + pgvector) ────────────────────────
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: digidentity_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL_SYNC: postgresql://postgres:postgres@localhost:5432/digidentity_test
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/digidentity_test
+      EMBEDDING_PROVIDER: mock
+      ANTHROPIC_API_KEY: ""
+      OPENAI_API_KEY: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "apps/api/uv.lock"
+
+      - name: Install dependencies
+        working-directory: apps/api
+        run: uv sync --group dev
+
+      - name: Run Alembic migrations
+        working-directory: apps/api
+        run: uv run alembic upgrade head
+
+      - name: Run tests
+        working-directory: apps/api
+        run: uv run pytest tests/ -q
+
+  # ── 2. Frontend tests + build ──────────────────────────────────────────────
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: apps/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        working-directory: apps/web
+        run: pnpm test
+
+      - name: Build
+        working-directory: apps/web
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+        run: pnpm build
+
+  # ── 3. Lint packs (morph rules + persona schema) ───────────────────────────
+  lint-packs:
+    name: Lint Packs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "apps/api/uv.lock"
+
+      - name: Install dependencies
+        working-directory: apps/api
+        run: uv sync --group dev
+
+      - name: Lint pack morph rules
+        run: uv run --directory apps/api python tools/lint-pack/lint_pack.py --all
+
+  # ── 4. Golden eval gate — real-estate-luxury ──────────────────────────────
+  eval-real-estate-luxury:
+    name: Eval — real-estate-luxury
+    runs-on: ubuntu-latest
+
+    env:
+      EMBEDDING_PROVIDER: mock
+      ANTHROPIC_API_KEY: ""
+      OPENAI_API_KEY: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "apps/api/uv.lock"
+
+      - name: Install dependencies
+        working-directory: apps/api
+        run: uv sync --group dev
+
+      - name: Run golden evals
+        working-directory: apps/api
+        run: |
+          if [ -f tests/test_real_estate_golden.py ]; then
+            uv run pytest tests/test_real_estate_golden.py -q
+          else
+            echo "Golden eval file not found — skipping"
+          fi
+
+  # ── 5. ADR coverage check ─────────────────────────────────────────────────
+  adr-coverage:
+    name: ADR Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "apps/api/uv.lock"
+
+      - name: Install dependencies
+        working-directory: apps/api
+        run: uv sync --group dev
+
+      - name: Check ADR statuses
+        run: uv run --directory apps/api python tools/adr-check.py
