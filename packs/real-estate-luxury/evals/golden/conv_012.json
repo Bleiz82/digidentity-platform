@@ -1,0 +1,32 @@
+{
+  "id": "conv_012",
+  "scenario": "luxury_retiree_como_wellness_calm",
+  "persona_expected": "luxury_retiree",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Mio marito e cardiologo in pensione. Cerchiamo qualcosa di tranquillo sul Lago di Como, vicino a strutture sanitarie eccellenti. Clima mite, spazio per un giardino."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "mentions_calm",
+        "proximity_healthcare",
+        "searches_como_quiet"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 10,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

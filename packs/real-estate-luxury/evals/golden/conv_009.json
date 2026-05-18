@@ -1,0 +1,33 @@
+{
+  "id": "conv_009",
+  "scenario": "family_relocating_rome_international_community",
+  "persona_expected": "family_relocating",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Torniamo a Roma da New York. Cerchiamo una casa in una zona con comunita internazionale consolidata, scuole anglofonee a portata di mano."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "mentions_international_community",
+        "searches_rome_premium",
+        "qualifies_needs"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 20,
+    "lead_score_max": 100,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

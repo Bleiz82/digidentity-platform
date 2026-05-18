@@ -1,0 +1,34 @@
+{
+  "id": "conv_004",
+  "scenario": "international_investor_portfolio_diversification",
+  "persona_expected": "international_investor",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Sto diversificando il portafoglio con asset class alternativi. Mi interessa real estate luxury italiano per affitti brevi ad alto ticket. Yield target 5-7%."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "confirms_yield_target",
+        "searches_rental_properties",
+        "asks_management"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 35,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

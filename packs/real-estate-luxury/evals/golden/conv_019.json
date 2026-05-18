@@ -1,0 +1,33 @@
+{
+  "id": "conv_019",
+  "scenario": "browsing_to_warm_inheritance_windfall",
+  "persona_expected": "browsing",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho ricevuto un eredita e sto valutando come investirla. Immobiliare di pregio potrebbe essere interessante. Non so ancora cosa voglio esattamente."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "explores_options",
+        "qualifies_interest",
+        "searches_premium"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 15,
+    "lead_score_max": 80,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "conv_001",
+  "scenario": "international_investor_villa_costa_smeralda_yield",
+  "persona_expected": "international_investor",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho circa 2,5 milioni da investire in immobiliare luxury. Cerco qualcosa in Sardegna con buon rendimento locativo."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "mentions_yield",
+        "asks_budget_confirmation",
+        "searches_properties"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

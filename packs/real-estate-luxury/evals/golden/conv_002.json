@@ -1,0 +1,34 @@
+{
+  "id": "conv_002",
+  "scenario": "international_investor_off_market_como",
+  "persona_expected": "international_investor",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Sono un investitore svizzero, cerco immobili off-market sul Lago di Como. Budget 1.8-2.2 milioni."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "mentions_off_market",
+        "asks_exit_strategy",
+        "highlights_property"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

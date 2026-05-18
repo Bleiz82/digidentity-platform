@@ -1,0 +1,31 @@
+{
+  "id": "conv_017",
+  "scenario": "holiday_seeker_christmas_tuscany_family",
+  "persona_expected": "holiday_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Cerco qualcosa di speciale per Natale e Capodanno in Toscana, siamo in famiglia, 6 persone. Una fattoria o villa rustica con camino, possibilmente con chef."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "searches_holiday_tuscan_villa",
+        "asks_dates",
+        "presents_options"
+      ],
+      "tools_expected": [
+        "kg_search"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 5,
+    "lead_score_max": 60,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

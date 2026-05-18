@@ -1,0 +1,33 @@
+{
+  "id": "conv_018",
+  "scenario": "browsing_to_warm_como_dream",
+  "persona_expected": "browsing",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Sto solo guardando, non ho ancora nessuna urgenza. Ho sempre avuto il sogno di una casa sul lago."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "opens_conversation",
+        "asks_about_lake",
+        "searches_softly"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 15,
+    "lead_score_max": 80,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

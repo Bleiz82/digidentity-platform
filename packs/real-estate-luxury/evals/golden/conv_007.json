@@ -1,0 +1,33 @@
+{
+  "id": "conv_007",
+  "scenario": "family_relocating_milan_suburb_safety",
+  "persona_expected": "family_relocating",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Mio marito lavora a Milano. Cerchiamo una villa nei dintorni, zona sicura, con spazi per i bambini. Budget massimo 1.5 milioni."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "addresses_safety",
+        "searches_milan_suburbs",
+        "qualifies_family"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 25,
+    "lead_score_max": 100,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

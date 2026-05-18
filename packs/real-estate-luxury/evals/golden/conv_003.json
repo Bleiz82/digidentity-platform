@@ -1,0 +1,33 @@
+{
+  "id": "conv_003",
+  "scenario": "international_investor_tuscany_estate_due_diligence",
+  "persona_expected": "international_investor",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Voglio acquistare una tenuta in Toscana, possibilmente con vigna. Budget flessibile intorno ai 4 milioni. Ci tengo alla due diligence accurata."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "mentions_due_diligence",
+        "searches_estate",
+        "qualifies_budget"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 40,
+    "lead_score_max": 100,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

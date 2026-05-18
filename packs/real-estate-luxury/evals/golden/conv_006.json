@@ -1,0 +1,33 @@
+{
+  "id": "conv_006",
+  "scenario": "family_relocating_london_chianti_school",
+  "persona_expected": "family_relocating",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ci trasferiamo da Londra in Toscana con tre figli. Ci serve una casa vicino a una scuola internazionale, con giardino grande e doppio garage."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "asks_school_distance",
+        "searches_family_properties",
+        "highlights_garden"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 25,
+    "lead_score_max": 100,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "conv_020",
+  "scenario": "browsing_to_hot_urgent_viewing_contact",
+  "persona_expected": "browsing",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Stavo solo curiosando ma ho visto una proprieta che mi ha colpito molto. Vorrei vederla prima possibile. Il mio numero e +39 345 1234567."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "confirms_availability",
+        "schedules_viewing",
+        "records_contact",
+        "highlights_property"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 50,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

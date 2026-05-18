@@ -1,0 +1,32 @@
+{
+  "id": "conv_016",
+  "scenario": "holiday_seeker_panarea_exclusive_week",
+  "persona_expected": "holiday_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Voglio fare qualcosa di veramente speciale quest anno. Panarea, Capri o Portofino. Una settimana, massimo privacy, yacht service incluso se possibile."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "presents_exclusive_options",
+        "searches_island_villas",
+        "asks_dates"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 5,
+    "lead_score_max": 60,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

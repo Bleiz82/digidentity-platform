@@ -1,0 +1,34 @@
+{
+  "id": "conv_005",
+  "scenario": "international_investor_requesting_viewing_contact",
+  "persona_expected": "international_investor",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho visto alcune proprieta online in Costa Smeralda. Vorrei organizzare un sopralluogo la prossima settimana. Ho un budget di 3 milioni. Puo inviarmi i dettagli al mio indirizzo email?"
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "confirms_viewing",
+        "records_contact",
+        "searches_properties"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 60,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

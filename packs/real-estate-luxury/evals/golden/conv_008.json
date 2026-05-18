@@ -1,0 +1,34 @@
+{
+  "id": "conv_008",
+  "scenario": "family_relocating_como_urgent_school_start",
+  "persona_expected": "family_relocating",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Dobbiamo trovare casa entro settembre, i bambini iniziano la scuola. Lago di Como, almeno 5 camere, piscina. Abbiamo gia un budget approvato dalla banca: 2.8 milioni."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "notes_urgency",
+        "confirms_budget",
+        "searches_family_lake_villa"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 50,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search",
+      "lead_update_score"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

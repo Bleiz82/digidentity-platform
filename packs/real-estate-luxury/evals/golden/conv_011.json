@@ -1,0 +1,32 @@
+{
+  "id": "conv_011",
+  "scenario": "luxury_retiree_sardinia_sea_lifestyle",
+  "persona_expected": "luxury_retiree",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Ho 70 anni, sono in pensione con mia moglie. Vogliamo una seconda casa in Sardegna, preferibilmente fronte mare, con servizi vicini. Non dobbiamo risparmiare."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "focuses_lifestyle",
+        "searches_sea_front",
+        "mentions_services"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 10,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

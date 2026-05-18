@@ -1,0 +1,33 @@
+{
+  "id": "conv_013",
+  "scenario": "luxury_retiree_tuscany_view_terrace",
+  "persona_expected": "luxury_retiree",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Sogno una casa in collina toscana con una terrazza dove fare colazione guardando i cipressi. Niente aeroporti rumorosi, niente turismo di massa. Sono disposto a spendere quello che serve."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "paints_lifestyle_picture",
+        "searches_tuscan_hills",
+        "highlights_view_property"
+      ],
+      "tools_expected": [
+        "kg_search",
+        "lead_update_score",
+        "render_highlight"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 15,
+    "lead_score_max": 100,
+    "directives_emitted_min": 1,
+    "tools_called_must_include": [
+      "kg_search"
+    ],
+    "tools_called_must_not_include": []
+  }
+}

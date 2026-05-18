@@ -1,0 +1,31 @@
+{
+  "id": "conv_015",
+  "scenario": "holiday_seeker_august_group_villa",
+  "persona_expected": "holiday_seeker",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Siamo un gruppo di 10 amici, cerchiamo una villa esclusiva per 2 settimane ad agosto. Piscina, cuoco privato, vicino al mare. Budget 15.000 euro a settimana."
+    },
+    {
+      "role": "assistant",
+      "expected_traits": [
+        "confirms_exclusivity",
+        "searches_group_villa",
+        "asks_location"
+      ],
+      "tools_expected": [
+        "kg_search"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "lead_score_min": 5,
+    "lead_score_max": 60,
+    "directives_emitted_min": 0,
+    "tools_called_must_include": [
+      "kg_search"
+    ],
+    "tools_called_must_not_include": []
+  }
+}
