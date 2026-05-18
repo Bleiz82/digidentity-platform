@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from digidentity_api.api.conversations import router as conversations_router
+from digidentity_api.api.rendering import router as rendering_router
 
 log = structlog.get_logger()
 
@@ -33,6 +34,7 @@ app.add_middleware(
 )
 
 app.include_router(conversations_router, prefix="/api/v1")
+app.include_router(rendering_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["ops"])
