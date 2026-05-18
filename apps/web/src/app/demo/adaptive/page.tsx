@@ -2,18 +2,19 @@
 
 /**
  * /demo/adaptive — interactive demo for the Adaptive Renderer Decision Engine.
- * Simulates VisitorPrior (persona + utm_source) and shows live morphing output.
+ * Auto-detects visitor prior from cookie (set by Edge middleware).
+ * Manual override: toggle persona + utm_source for testing.
  * Press D to open the debug panel.
  */
 
 import { useState, useMemo } from "react";
 import { useAdaptiveRender } from "@/hooks/useAdaptiveRender";
+import { useVisitorPrior } from "@/hooks/useVisitorPrior";
 import { AdaptiveSection } from "@/components/AdaptiveSection";
 import { DirectiveDebugPanel } from "@/components/DirectiveDebugPanel";
 import type { VisitorPriorInput } from "@/types/rendering";
 
 const PACK_ID = "real-estate-luxury";
-const DEMO_TENANT = "00000000-0000-0000-0000-000000000001";
 
 type PersonaKey =
   | "none"
@@ -22,39 +23,31 @@ type PersonaKey =
   | "luxury_retiree";
 
 const PERSONA_LABELS: Record<PersonaKey, string> = {
-  none: "— nessuna (default layout) —",
+  none: "— auto (from sense) —",
   family_relocating: "Famiglia in trasferimento",
   international_investor: "Investitore internazionale",
   luxury_retiree: "Pensionato lifestyle",
 };
 
 export default function AdaptiveDemoPage() {
+  const sensePrior = useVisitorPrior();
+  const [manualMode, setManualMode] = useState(false);
   const [persona, setPersona] = useState<PersonaKey>("none");
   const [utmSource, setUtmSource] = useState("");
-  // Stable session + creation time for the lifetime of this page load
-  const [sessionId] = useState<string>(() => crypto.randomUUID());
-  const [createdAt] = useState<string>(() => new Date().toISOString());
 
-  const prior: VisitorPriorInput = useMemo(
-    () => ({
-      session_id: sessionId,
-      tenant_id: DEMO_TENANT,
-      visitor_hash: "demo1234567890ab",
+  const prior: VisitorPriorInput = useMemo(() => {
+    if (!manualMode) return sensePrior;
+    return {
+      ...sensePrior,
       inferred_personas:
         persona !== "none" ? [{ persona_id: persona, score: 0.9 }] : [],
       signals: {
-        device_class: "desktop",
+        ...sensePrior.signals,
         utm: (utmSource ? { source: utmSource } : {}) as Record<string, string>,
-        is_returning: false,
       },
-      confidence: 0.8,
-      created_at: createdAt,
       updated_at: new Date().toISOString(),
-    }),
-    // session stays stable; refetch only when persona or utm changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sessionId, persona, utmSource]
-  );
+    };
+  }, [manualMode, sensePrior, persona, utmSource]);
 
   const { directives, matched_rules, loading, error, latency_ms } =
     useAdaptiveRender(prior, "homepage", PACK_ID);
@@ -63,6 +56,8 @@ export default function AdaptiveDemoPage() {
     (d) => d.target === "hero_section" && d.type === "morph_section"
   );
 
+  const topPersona = sensePrior.inferred_personas[0];
+
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
       <h1 className="text-2xl font-bold mb-2">Adaptive Renderer Demo</h1>
@@ -70,11 +65,38 @@ export default function AdaptiveDemoPage() {
         BIBLE-v3 §6.2 — Decision Engine backend + RSC morph skeleton
       </p>
 
+      {/* Sense status */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4 max-w-lg text-xs">
+        <span className="text-gray-400">Sense: </span>
+        {topPersona ? (
+          <span className="text-green-400">
+            {topPersona.persona_id} ({(topPersona.score * 100).toFixed(0)}%)
+          </span>
+        ) : (
+          <span className="text-gray-500">browsing (default)</span>
+        )}
+        <span className="text-gray-600 ml-2">
+          · device={sensePrior.signals.device_class}
+        </span>
+      </div>
+
       {/* Simulator */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 max-w-lg">
-        <h2 className="text-base font-semibold mb-4 text-gray-300">
-          Simula VisitorPrior
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-gray-300">
+            Override manuale
+          </h2>
+          <button
+            onClick={() => setManualMode((m) => !m)}
+            className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+              manualMode
+                ? "border-green-500 text-green-400 bg-green-500/10"
+                : "border-gray-700 text-gray-500 hover:border-gray-500"
+            }`}
+          >
+            {manualMode ? "ON" : "OFF"}
+          </button>
+        </div>
 
         <label className="block mb-1 text-xs text-gray-400 uppercase tracking-wide">
           Persona
@@ -82,7 +104,8 @@ export default function AdaptiveDemoPage() {
         <select
           value={persona}
           onChange={(e) => setPersona(e.target.value as PersonaKey)}
-          className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mb-4 border border-gray-700 focus:outline-none focus:border-green-500"
+          disabled={!manualMode}
+          className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 mb-4 border border-gray-700 focus:outline-none focus:border-green-500 disabled:opacity-40"
         >
           {(Object.keys(PERSONA_LABELS) as PersonaKey[]).map((k) => (
             <option key={k} value={k}>
@@ -98,8 +121,9 @@ export default function AdaptiveDemoPage() {
           type="text"
           value={utmSource}
           onChange={(e) => setUtmSource(e.target.value)}
+          disabled={!manualMode}
           placeholder="google, instagram, luxury-search…"
-          className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-green-500"
+          className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-green-500 disabled:opacity-40"
         />
 
         <div className="mt-4 min-h-5 text-xs">
