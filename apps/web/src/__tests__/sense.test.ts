@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { parseUtm, parseReferrer, parseDevice, inferPersona } from "@/lib/sense/rules";
 
 // ── parseUtm ─────────────────────────────────────────────────────────────────
@@ -107,5 +107,55 @@ describe("inferPersona", () => {
         expect(canonicalIds.has(s.persona_id)).toBe(true);
       }
     }
+  });
+});
+
+// ── useVisitorPrior upsert call ───────────────────────────────────────────────
+
+describe("useVisitorPrior persistToBackend", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("calls /api/v1/visitor-sessions/upsert with visitor data from cookie", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ session_id: "abc", is_new: true, last_seen_at: "2026-01-01T00:00:00Z" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+
+    const prior = {
+      session_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      tenant_id: "00000000-0000-0000-0000-000000000001",
+      visitor_hash: "abcdef1234567890abcdef12",
+      inferred_personas: [{ persona_id: "browsing", score: 0.5 }],
+      signals: { device_class: "desktop" as const, utm: {}, is_returning: false },
+      confidence: 0.5,
+      created_at: "2026-01-01T00:00:00Z",
+      updated_at: "2026-01-01T00:00:00Z",
+    };
+
+    // Invoke persistToBackend by importing the module
+    const mod = await import("../hooks/useVisitorPrior");
+    // Access via the exported function indirectly — call the hook in a controlled way
+    // by mocking cookie and checking fetch was called
+    vi.spyOn(
+      await import("@/lib/sense/client"),
+      "readVisitorPriorFromCookie"
+    ).mockReturnValue(prior);
+
+    // Trigger the effect manually
+    const { renderHook } = await import("@testing-library/react");
+    const { act } = await import("react");
+    const { result } = renderHook(() => mod.useVisitorPrior());
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
+    });
+
+    expect(fetchSpy).toHaveBeenCalledOnce();
+    const [url, opts] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    expect(url).toContain("/api/v1/visitor-sessions/upsert");
+    expect((opts.headers as Record<string, string>)["X-Tenant-Id"]).toBe(prior.tenant_id);
+    const body = JSON.parse(opts.body as string);
+    expect(body.visitor_id).toBe(prior.session_id);
   });
 });

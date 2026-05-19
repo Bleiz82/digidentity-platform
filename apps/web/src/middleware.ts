@@ -5,7 +5,7 @@ import { parseUtm, parseReferrer, parseDevice, inferPersona } from "@/lib/sense/
 export const config = { matcher: ["/demo/:path*"] };
 
 const COOKIE_NAME = "dg_visitor_prior";
-const COOKIE_MAX_AGE = 1800;
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 giorni — cross-session memory
 const TENANT_ID = "00000000-0000-0000-0000-000000000001";
 
 export function middleware(request: NextRequest): NextResponse {

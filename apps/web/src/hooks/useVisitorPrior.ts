@@ -3,6 +3,7 @@ import { readVisitorPriorFromCookie } from "@/lib/sense/client";
 import type { VisitorPrior } from "@/lib/sense/types";
 
 const DEMO_TENANT = "00000000-0000-0000-0000-000000000001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 function makeFallback(): VisitorPrior {
   const now = new Date().toISOString();
@@ -22,12 +23,35 @@ function makeFallback(): VisitorPrior {
   };
 }
 
+async function persistToBackend(prior: VisitorPrior): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/api/v1/visitor-sessions/upsert`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Tenant-Id": prior.tenant_id,
+      },
+      body: JSON.stringify({
+        visitor_id: prior.session_id,
+        signals: prior.signals,
+        inferred_personas: prior.inferred_personas,
+        confidence: prior.confidence,
+      }),
+    });
+  } catch {
+    // Fire-and-forget: network errors don't break the UX
+  }
+}
+
 export function useVisitorPrior(): VisitorPrior {
   const [prior, setPrior] = useState<VisitorPrior>(makeFallback);
 
   useEffect(() => {
     const fromCookie = readVisitorPriorFromCookie();
-    if (fromCookie) setPrior(fromCookie);
+    if (fromCookie) {
+      setPrior(fromCookie);
+      persistToBackend(fromCookie);
+    }
   }, []);
 
   return prior;
