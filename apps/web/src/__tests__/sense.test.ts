@@ -93,7 +93,7 @@ describe("inferPersona", () => {
       "holiday_seeker",
       "browsing",
     ]);
-    const inputs = [
+    const inputs: Array<{ utm: Record<string, string> }> = [
       { utm: { utm_term: "invest roi" } },
       { utm: { utm_term: "school famil" } },
       { utm: { utm_term: "lifestyle wellness" } },
