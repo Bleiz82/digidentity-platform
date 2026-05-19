@@ -1,0 +1,43 @@
+version: 1
+target_page: spatial
+description: "Spatial Experience morph rules — 360° viewer navigation real-estate-luxury"
+
+rules:
+  - id: spatial-master-suite
+    priority: 50
+    description: "Visitor asks about bedroom/master suite → navigate to master-suite scene"
+    when:
+      signal: intent_keyword.master_suite
+      equals: true
+    do:
+      - directive: spatial_navigate
+        target: master-suite
+        params:
+          target_scene_id: master-suite
+          transition: fade
+
+  - id: spatial-infinity-pool
+    priority: 40
+    description: "Visitor asks about pool/outdoor → navigate to infinity-pool scene"
+    when:
+      signal: intent_keyword.pool
+      equals: true
+    do:
+      - directive: spatial_navigate
+        target: infinity-pool
+        params:
+          target_scene_id: infinity-pool
+          transition: fade
+
+  - id: spatial-villa-entrance
+    priority: 30
+    description: "Visitor asks about entrance/access/gates → navigate to villa-entrance scene"
+    when:
+      signal: intent_keyword.entrance
+      equals: true
+    do:
+      - directive: spatial_navigate
+        target: villa-entrance
+        params:
+          target_scene_id: villa-entrance
+          transition: fade

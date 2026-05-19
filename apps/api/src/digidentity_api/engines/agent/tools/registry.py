@@ -90,6 +90,17 @@ class ToolRegistry:
         }
         return {"directive": directive, "emitted": True}
 
+    def spatial_navigate(self, scene_id: str, reason: str) -> dict[str, Any]:
+        """Emit a spatial_navigate RenderingDirective to transition the 360° viewer."""
+        directive = {
+            "type": "spatial_navigate",
+            "target": scene_id,
+            "params": {"target_scene_id": scene_id, "transition": "fade"},
+            "priority": 200,
+            "reason": reason,
+        }
+        return {"directive": directive, "emitted": True, "scene_id": scene_id}
+
     def lead_update_score(self, signal: str, weight: float) -> dict[str, Any]:
         """Record scoring signal and return updated total (in-memory accumulator).
 
@@ -166,6 +177,11 @@ class ToolRegistry:
                 return self.lead_update_score(
                     signal=tool_input["signal"],
                     weight=float(tool_input["weight"]),
+                )
+            case "spatial_navigate":
+                return self.spatial_navigate(
+                    scene_id=tool_input["scene_id"],
+                    reason=tool_input["reason"],
                 )
             case _:
                 raise ValueError(f"Unknown tool: {tool_name!r}")

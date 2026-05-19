@@ -121,6 +121,7 @@
         "reorder",
         "rewrite_copy",
         "set_persona",
+        "spatial_navigate",
         "trigger_agent",
         "track",
         "render_default"

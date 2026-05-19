@@ -115,11 +115,11 @@ describe("AdaptiveSection", () => {
       { type: "hide", target: "investment_roi_widget", params: {}, priority: 100, reason: "r" },
     ];
     const { container } = render(
-      createElement(
-        AdaptiveSection,
-        { sectionId: "investment_roi_widget", directives },
-        createElement("span", null, "ROI widget")
-      )
+      createElement(AdaptiveSection, {
+        sectionId: "investment_roi_widget",
+        directives,
+        children: createElement("span", null, "ROI widget"),
+      })
     );
     expect(container.firstChild).toBeNull();
   });
@@ -129,11 +129,11 @@ describe("AdaptiveSection", () => {
       { type: "show", target: "school_proximity_badge", params: {}, priority: 100, reason: "r" },
     ];
     render(
-      createElement(
-        AdaptiveSection,
-        { sectionId: "school_proximity_badge", directives },
-        createElement("span", null, "School badge")
-      )
+      createElement(AdaptiveSection, {
+        sectionId: "school_proximity_badge",
+        directives,
+        children: createElement("span", null, "School badge"),
+      })
     );
     expect(screen.getByText("School badge")).not.toBeNull();
   });
@@ -149,11 +149,11 @@ describe("AdaptiveSection", () => {
       },
     ];
     render(
-      createElement(
-        AdaptiveSection,
-        { sectionId: "hero_section", directives },
-        createElement("span", null, "Hero content")
-      )
+      createElement(AdaptiveSection, {
+        sectionId: "hero_section",
+        directives,
+        children: createElement("span", null, "Hero content"),
+      })
     );
     const section = screen.getByText("Hero content").closest("section");
     expect(section?.getAttribute("data-variant")).toBe("family_hero_v1");

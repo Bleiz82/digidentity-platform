@@ -73,4 +73,31 @@ LEAD_UPDATE_SCORE: dict[str, Any] = {
     },
 }
 
-ALL_TOOLS: list[dict[str, Any]] = [KG_SEARCH, RENDER_HIGHLIGHT, LEAD_UPDATE_SCORE]
+SPATIAL_NAVIGATE: dict[str, Any] = {
+    "name": "spatial_navigate",
+    "description": (
+        "Navigate the 360° spatial viewer to a specific scene. "
+        "Use when the visitor's message references a specific area of the property "
+        "(e.g. master suite, pool, entrance). The viewer transitions smoothly to the scene."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "scene_id": {
+                "type": "string",
+                "description": (
+                    "ID of the scene to navigate to. "
+                    "Valid values: 'villa-entrance', 'master-suite', 'infinity-pool'."
+                ),
+                "enum": ["villa-entrance", "master-suite", "infinity-pool"],
+            },
+            "reason": {
+                "type": "string",
+                "description": "Why this scene is relevant to the visitor's current interest.",
+            },
+        },
+        "required": ["scene_id", "reason"],
+    },
+}
+
+ALL_TOOLS: list[dict[str, Any]] = [KG_SEARCH, RENDER_HIGHLIGHT, LEAD_UPDATE_SCORE, SPATIAL_NAVIGATE]

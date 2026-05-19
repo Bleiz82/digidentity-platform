@@ -13,6 +13,7 @@ DirectiveType = Literal[
     "hide",
     "reorder",
     "rewrite_copy",
+    "spatial_navigate",
 ]
 
 

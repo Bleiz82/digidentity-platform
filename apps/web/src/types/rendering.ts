@@ -14,6 +14,7 @@ export const directiveTypeSchema = z.enum([
   "hide",
   "reorder",
   "rewrite_copy",
+  "spatial_navigate",
 ]);
 
 export type DirectiveType = z.infer<typeof directiveTypeSchema>;

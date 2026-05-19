@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@photo-sphere-viewer/core": "^5.14.1",
     "clsx": "^2.1.0",
     "next": "15.1.0",
     "react": "19.0.0",

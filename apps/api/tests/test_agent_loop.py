@@ -21,13 +21,13 @@ TENANT_ID = "00000000-0000-0000-0000-000000000001"
 CONV_ID = "00000000-0000-0000-0000-000000000002"
 
 
-# ── 1. Registry registers 3 tools with valid Anthropic schema ─────────────────
+# ── 1. Registry registers 4 tools with valid Anthropic schema ─────────────────
 
-def test_registry_has_three_tools() -> None:
+def test_registry_has_four_tools() -> None:
     registry = ToolRegistry(tenant_id=TENANT_ID)
     schemas = registry.schemas
     names = {s["name"] for s in schemas}
-    assert names == {"kg_search", "render_highlight", "lead_update_score"}
+    assert names == {"kg_search", "render_highlight", "lead_update_score", "spatial_navigate"}
 
 
 def test_tool_schemas_are_anthropic_compatible() -> None:
